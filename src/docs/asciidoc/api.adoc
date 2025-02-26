@@ -1,0 +1,14 @@
+= Mos Rest Docs _ API
+:doctype: book
+:icons: front
+:source-highlighter: highlighsjs
+:toc: left
+:toclevels: 1
+:snippets: build/generated-snippets
+
+[[User-get]]
+== User-get
+
+operation::users-get-success[]
+operation::users-get-fail[]
+

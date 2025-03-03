@@ -1,15 +1,12 @@
 package com.mos.backend.users.presentation.controller.api;
 
 import com.mos.backend.users.application.OauthService;
-import com.mos.backend.users.application.responsedto.LoginRes;
 import com.mos.backend.users.presentation.requestdto.OauthLoginReq;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthController {
     private final OauthService oauthService;
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public ResponseEntity<LoginRes> socialLogin(@Valid @RequestBody OauthLoginReq req) {
-        LoginRes loginRes = oauthService.login(req);
-        return ResponseEntity.ok(loginRes);
+    public void socialLogin(@Valid @RequestBody OauthLoginReq req, HttpServletResponse response) {
+        oauthService.login(req, response);
     }
 }

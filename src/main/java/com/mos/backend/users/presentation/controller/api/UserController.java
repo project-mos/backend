@@ -16,7 +16,7 @@ public class UserController {
     @GetMapping("/hello/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse hello(@PathVariable Long userId) {
-        if (userId == 1L) throw new MosException(UserErrorCode.USER_NOT_FOUND_EXCEPTION);
+        if (userId == 1L) throw new MosException(UserErrorCode.USER_NOT_FOUND);
         return new UserResponse(userId) ;
     }
 

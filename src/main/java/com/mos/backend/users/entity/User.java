@@ -1,6 +1,7 @@
 package com.mos.backend.users.entity;
 
 import com.mos.backend.common.entity.BaseTimeEntity;
+import com.mos.backend.users.application.responsedto.OauthMemberInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,12 +26,20 @@ public class User extends BaseTimeEntity {
     private UserRole role;
 
     @Column(nullable = false)
-    private String providerType;
+    @Enumerated(EnumType.STRING)
+    private OauthProvider oauthProvider;
 
-    @Column(nullable = false)
+    @Column
     private String socialId;
 
-    @Column(nullable = false)
+    @Column
     private String introduction;
+
+    public User(OauthMemberInfo oauthMemberInfo) {
+        this.role = UserRole.USER;
+        this.socialId = oauthMemberInfo.getSocialId();
+        this.nickname = oauthMemberInfo.getNickname();
+        this.oauthProvider = oauthMemberInfo.getOauthProvider();
+    }
 
 }

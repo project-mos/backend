@@ -10,7 +10,10 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
 
-    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "auth.user.not-found");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "auth.user.not-found"),
+    USER_FORBIDDEN(HttpStatus.FORBIDDEN, "auth.user.forbidden"),
+    USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "auth.user.unauthorized"),
+    MISSING_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "auth.user.missing-access-token"),;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

@@ -19,10 +19,10 @@ public class StudyMemberRole {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "study_member_id", nullable = false)
+    @JoinColumn(name = "study_member_id", nullable = false)
     private StudyMember studyMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 }

@@ -61,6 +61,11 @@ dependencies {
 	// api 문서 html 자동 생성기
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// JWT
+	implementation 'com.auth0:java-jwt:4.2.1'
 }
 
 tasks.named('test') {

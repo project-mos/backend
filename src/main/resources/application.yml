@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: backend
+
+  messages:
+    basename: messages/messages-error
+    encoding: UTF-8
+    cache-duration: 3600
+
+  profiles:
+    active: local

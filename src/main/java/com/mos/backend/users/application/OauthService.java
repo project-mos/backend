@@ -36,8 +36,8 @@ public class OauthService {
         String accessToken = tokenUtil.issueAccessToken(user.getId());
         String refreshToken = tokenUtil.issueRefreshToken(user.getId());
 
-        addCookie(response, "accessToken", accessToken);
-        addCookie(response, "refreshToken", refreshToken);
+        addCookie(response, "access_token", accessToken);
+        addCookie(response, "refresh_token", refreshToken);
     }
 
     private void addCookie(HttpServletResponse response, String tokenName, String tokenValue) {

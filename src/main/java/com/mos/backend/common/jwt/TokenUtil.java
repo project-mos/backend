@@ -100,6 +100,9 @@ public class TokenUtil {
         } catch (TokenExpiredException e) {
             log.debug("AccessToken is expired: ${}", accessToken);
             throw new MosException(UserErrorCode.USER_UNAUTHORIZED);
+        } catch (JWTVerificationException e) {
+            log.debug("AccessToken is invalid: ${}", accessToken);
+            throw new MosException(UserErrorCode.USER_UNAUTHORIZED);
         }
     }
 

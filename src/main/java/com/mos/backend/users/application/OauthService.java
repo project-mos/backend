@@ -7,7 +7,6 @@ import com.mos.backend.users.entity.OauthProvider;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.infrastructure.respository.UserRepositoryImpl;
 import com.mos.backend.users.presentation.requestdto.OauthLoginReq;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +32,7 @@ public class OauthService {
 
         User user = byOauthProviderAndSocialId.orElseGet(() -> userRepositoryImpl.save(new User(oauthMemberInfo)));
 
-        String accessToken = tokenUtil.issueAccessToken(user.getId());
-        String refreshToken = tokenUtil.issueRefreshToken(user.getId());
-
-        addCookie(response, "access_token", accessToken);
-        addCookie(response, "refresh_token", refreshToken);
-    }
-
-    private void addCookie(HttpServletResponse response, String tokenName, String tokenValue) {
-        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(1 * 60 * 60);
-        response.addCookie(tokenCookie);
+        tokenUtil.addTokenToCookie(response, user.getId());
     }
 
     private static OauthParams createOauthParams(OauthLoginReq req) {

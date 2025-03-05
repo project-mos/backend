@@ -9,7 +9,9 @@ import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.redis.RedisTokenUtil;
 import com.mos.backend.users.entity.exception.UserErrorCode;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Getter
@@ -31,10 +33,10 @@ public class TokenUtil {
     private Long accessTokenExpirationPeriod;
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
-    @Value("${jwt.access.header}")
-    private String accessHeader;
-    @Value("${jwt.refresh.header}")
-    private String refreshHeader;
+    @Value("${jwt.access.cookie}")
+    private String accessCookie;
+    @Value("${jwt.refresh.cookie}")
+    private String refreshCookie;
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -78,17 +80,18 @@ public class TokenUtil {
     }
 
     public String extractToken(HttpServletRequest request, TokenType tokenType) {
-        Optional<String> requestToken = switch (tokenType) {
-            case ACCESS_TOKEN -> Optional.ofNullable(request.getHeader(accessHeader))
-                    .filter(token -> token.startsWith(BEARER))
-                    .map(token -> token.substring(7));
-            case REFRESH_TOKEN -> Optional.ofNullable(request.getHeader(refreshHeader))
-                    .filter(token -> token.startsWith(BEARER))
-                    .map(token -> token.substring(7));
-            default -> throw new IllegalStateException("Unexpected value: " + tokenType);
-        };
+        String cookieName = (tokenType == TokenType.ACCESS_TOKEN) ? accessCookie : refreshCookie;
 
-        return requestToken.orElse(null);
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null)
+            throw new MosException(UserErrorCode.MISSING_ACCESS_TOKEN);
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieName))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new MosException(UserErrorCode.MISSING_ACCESS_TOKEN));
     }
 
     public DecodedJWT decodedJWT(String accessToken) {
@@ -99,4 +102,22 @@ public class TokenUtil {
             throw new MosException(UserErrorCode.USER_UNAUTHORIZED);
         }
     }
+
+    public void addTokenToCookie(HttpServletResponse response, Long memberId) {
+        String accessToken = issueAccessToken(memberId);
+        String refreshToken = issueRefreshToken(memberId);
+
+        addCookie(response, accessCookie, accessToken, accessTokenExpirationPeriod.intValue());
+        addCookie(response, refreshCookie, refreshToken, refreshTokenExpirationPeriod.intValue());
+    }
+
+
+    private void addCookie(HttpServletResponse response, String tokenName, String tokenValue, Integer expiration) {
+        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(expiration);
+        response.addCookie(tokenCookie);
+    }
+
 }

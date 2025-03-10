@@ -2,10 +2,10 @@ package com.mos.backend.common.jwt;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.ErrorCode;
 import com.mos.backend.common.exception.MosException;
-import com.mos.backend.common.response.ResponseDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,7 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        ResponseDto<String> errorResponse = ResponseDto.error(errorCode.getMessage(messageSource));
+        ObjectNode errorResponse = objectMapper.createObjectNode();
+        errorResponse.put("message", errorCode.getMessage(messageSource));
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

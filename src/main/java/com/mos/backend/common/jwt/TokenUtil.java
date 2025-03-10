@@ -99,10 +99,10 @@ public class TokenUtil {
             return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
         } catch (TokenExpiredException e) {
             log.debug("AccessToken is expired: ${}", accessToken);
-            throw new MosException(UserErrorCode.USER_UNAUTHORIZED);
+            throw new MosException(UserErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (JWTVerificationException e) {
             log.debug("AccessToken is invalid: ${}", accessToken);
-            throw new MosException(UserErrorCode.USER_UNAUTHORIZED);
+            throw new MosException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 

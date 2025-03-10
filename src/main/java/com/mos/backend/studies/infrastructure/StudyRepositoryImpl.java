@@ -22,4 +22,9 @@ public class StudyRepositoryImpl implements StudyRepository{
     public Optional<Study> findById(Long id) {
         return studyJpaRepository.findById(id);
     }
+
+    @Override
+    public void increaseViewCount(long studyId) {
+        studyJpaRepository.increaseViewCount(studyId);
+    }
 }

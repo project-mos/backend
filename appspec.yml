@@ -1,0 +1,22 @@
+version: 0.0
+os: linux
+files:
+  - source: /appspec.yml
+    destination: /home/ubuntu/deployment
+  - source: /scripts
+    destination: /home/ubuntu/deployment/scripts
+  - source: /docker-compose.yml
+    destination: /home/ubuntu/deployment/scripts
+
+hooks:
+  AfterInstall:
+    - location: scripts/after_install.sh
+      runas: ubuntu
+
+  ApplicationStart:
+    - location: scripts/start_server.sh
+      runas: ubuntu
+
+  ValidateService:
+    - location: scripts/validate_service.sh
+      runas: ubuntu

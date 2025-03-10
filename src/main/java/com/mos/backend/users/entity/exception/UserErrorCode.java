@@ -13,7 +13,9 @@ public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "auth.user.not-found"),
     USER_FORBIDDEN(HttpStatus.FORBIDDEN, "auth.user.forbidden"),
     USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "auth.user.unauthorized"),
-    MISSING_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "auth.user.missing-access-token"),;
+    MISSING_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "auth.user.missing-access-token"),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "auth.user.invalid-access-token"),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "auth.user.expired-access-token");
 
     private final HttpStatus httpStatus;
     private final String messageKey;

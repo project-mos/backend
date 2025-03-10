@@ -1,7 +1,12 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.studies.application.responsedto.StudyResponseDto;
+import com.mos.backend.studies.entity.Category;
+import com.mos.backend.studies.entity.MeetingType;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studies.entity.StudyTag;
+import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
 import com.mos.backend.studybenefits.application.StudyBenefitService;
@@ -11,6 +16,7 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import com.mos.backend.studyrules.application.StudyRuleService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,13 +27,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("StudyService 테스트")
@@ -150,5 +157,53 @@ class StudyServiceTest {
             });
         }
 
+    }
+
+    @Test
+    @DisplayName("스터디 단 건 조회 성공")
+    void getStudy_Success() {
+
+        // given
+        Study study = Study.builder()
+                .id(1L)
+                .title("testStudy")
+                .content("testContent")
+                .maxParticipantsCount(6)
+                .category(Category.PROGRAMMING)
+                .schedule("testSchedule")
+                .recruitmentStartDate(LocalDate.now())
+                .recruitmentEndDate(LocalDate.now())
+                .viewCount(0)
+                .meetingType(MeetingType.OFFLINE)
+                .tags(StudyTag.fromList(Arrays.asList("testTag1", "testTag2")))
+                .requirements("testRequirements")
+                .build();
+
+        doNothing().when(studyRepository).increaseViewCount(study.getId());
+        when(studyRepository.findById(study.getId())).thenReturn(Optional.of(study));
+        // when
+        StudyResponseDto studyResponseDto = studyService.get(study.getId());
+
+        // then
+        verify(studyRepository).increaseViewCount(study.getId());
+        verify(studyRepository).findById(study.getId());
+        assertNotNull(studyResponseDto);
+    }
+
+    @Test
+    @DisplayName("스터디 없는 스터디 아이디로 조회 시 단 건 조회 실패")
+    void getStudy_invalidStudyId() {
+
+        // given
+        Long studyId = 1L;
+
+        doNothing().when(studyRepository).increaseViewCount(studyId);
+        when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
+
+        // when
+        MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId));
+
+        // then
+        Assertions.assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
     }
 }

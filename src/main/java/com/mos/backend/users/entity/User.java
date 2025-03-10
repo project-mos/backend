@@ -3,13 +3,13 @@ package com.mos.backend.users.entity;
 import com.mos.backend.common.entity.BaseTimeEntity;
 import com.mos.backend.users.application.responsedto.OauthMemberInfo;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "users")
 public class User extends BaseTimeEntity {
 
@@ -35,6 +35,8 @@ public class User extends BaseTimeEntity {
     @Column
     private String introduction;
 
+    private String categories;
+
     public User(OauthMemberInfo oauthMemberInfo) {
         this.role = UserRole.USER;
         this.socialId = oauthMemberInfo.getSocialId();
@@ -42,4 +44,9 @@ public class User extends BaseTimeEntity {
         this.oauthProvider = oauthMemberInfo.getOauthProvider();
     }
 
+    public void update(String nickname, String introduction, String categories) {
+        this.nickname = nickname;
+        this.introduction = introduction;
+        this.categories = categories;
+    }
 }

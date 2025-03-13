@@ -40,4 +40,12 @@ public class StudyMember extends BaseAuditableEntity {
         studyMember.status = ParticipationStatus.ACTIVATED;
         return studyMember;
     }
+
+    public void completeStudy() {
+        status = ParticipationStatus.COMPLETED;
+    }
+
+    public void withDrawStudy() {
+        status = ParticipationStatus.WITHDRAWN;
+    }
 }

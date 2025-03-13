@@ -10,14 +10,15 @@ import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StudyQuestionService {
 
     private final StudyQuestionRepository studyQuestionRepository;
@@ -65,7 +66,7 @@ public class StudyQuestionService {
     private StudyQuestion convertToEntity(Study study, StudyQuestionCreateRequestDto dto) {
         return StudyQuestion.create(
                 study,
-                dto.getQuestionId(),
+                dto.getQuestionNum(),
                 dto.getQuestion(),
                 QuestionType.fromDescription(dto.getType()),
                 QuestionOption.fromList(dto.getOptions()),

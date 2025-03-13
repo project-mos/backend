@@ -1,6 +1,7 @@
 package com.mos.backend.studycurriculum.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
@@ -37,6 +38,9 @@ class StudyCurriculumServiceTest {
     @Mock
     private StudyMemberRepository studyMemberRepository;
 
+    @Mock
+    private EntityFacade entityFacade;
+
     @InjectMocks
     private StudyMemberService studyMemberService;
 
@@ -52,15 +56,15 @@ class StudyCurriculumServiceTest {
             Study mockStudy = mock(Study.class);
             User mockUser = mock(User.class);
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.of(mockStudy));
-            when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
 
             // When
             studyMemberService.create(studyId, userId);
 
             // Then
-            verify(studyRepository).findById(studyId);
-            verify(userRepository).findById(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
             verify(studyMemberRepository).save(any(StudyMember.class));
         }
     }
@@ -75,7 +79,7 @@ class StudyCurriculumServiceTest {
             Long studyId = 1L;
             Long userId = 1L;
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
+            when(entityFacade.getStudy(studyId)).thenThrow(new MosException(StudyErrorCode.STUDY_NOT_FOUND));
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
@@ -83,8 +87,8 @@ class StudyCurriculumServiceTest {
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
-            verify(studyRepository).findById(studyId);
-            verify(userRepository, never()).findById(anyLong());
+            verify(entityFacade, never()).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }
 
@@ -96,8 +100,8 @@ class StudyCurriculumServiceTest {
             Long userId = 1L;
             Study mockStudy = mock(Study.class);
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.of(mockStudy));
-            when(userRepository.findById(userId)).thenReturn(Optional.empty());
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenThrow(new MosException(UserErrorCode.USER_NOT_FOUND));
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
@@ -105,8 +109,8 @@ class StudyCurriculumServiceTest {
             });
 
             assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-            verify(studyRepository).findById(studyId);
-            verify(userRepository).findById(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }
     }

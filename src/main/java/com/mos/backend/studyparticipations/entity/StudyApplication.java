@@ -32,4 +32,12 @@ public class StudyApplication extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StudyApplicationStatus status;
+
+    public void approve() {
+        this.status = StudyApplicationStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = StudyApplicationStatus.REJECTED;
+    }
 }

@@ -7,20 +7,21 @@ import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class StudyCurriculumService {
 
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyRepository studyRepository;
 
+    @Transactional
     public void create(Long studyId, List<StudyCurriculumCreateRequestDto> requestDtoList) {
 
         if (requestDtoList.isEmpty()) {

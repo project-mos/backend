@@ -10,7 +10,7 @@ import java.util.Arrays;
 @Getter
 @RequiredArgsConstructor
 public enum Category {
-    PROGRAMMING("프로그래밍"), BOOK("독서");
+    PROGRAMMING("프로그래밍"), BOOK("독서"), LANGUAGE("어학"), CERTIFICATION("자격증"), HOBBY("취미"), EXAM("고시/공무원");
 
     private final String description;
 

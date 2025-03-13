@@ -9,7 +9,12 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "studies")
+@Table(name = "studies", indexes ={
+        @Index(name = "idx_category_created_at", columnList = "category, created_at"),
+        @Index(name = "idx_created_at", columnList = "created_at"),
+        @Index(name = "idx_recruitment_status_category_created_at", columnList = "recruitment_status, category, created_at"),
+        @Index(name = "idx_recruitment_status_created_at", columnList = "recruitment_status, created_at")
+})
 @Builder
 @AllArgsConstructor
 public class Study extends BaseAuditableEntity {
@@ -30,9 +35,9 @@ public class Study extends BaseAuditableEntity {
     private String notice;
 
     @Column(nullable = false)
-    private Integer maxParticipantsCount;
+    private Integer maxStudyMemberCount;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
     private Category category;
 

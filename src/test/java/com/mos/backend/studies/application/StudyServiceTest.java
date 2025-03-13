@@ -2,10 +2,7 @@ package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
-import com.mos.backend.studies.entity.Category;
-import com.mos.backend.studies.entity.MeetingType;
-import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.StudyTag;
+import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
@@ -73,7 +70,7 @@ class StudyServiceTest {
         validRequestDto.setTitle("Test Study");
         validRequestDto.setContent("Study Content");
         validRequestDto.setCategory("프로그래밍");
-        validRequestDto.setMaxParticipants(5);
+        validRequestDto.setMaxStudyMemberCount(5);
         validRequestDto.setRecruitmentStartDate(LocalDate.now());
         validRequestDto.setRecruitmentEndDate(LocalDate.now().plusDays(7));
         validRequestDto.setTags(List.of("Java", "Spring"));
@@ -168,7 +165,7 @@ class StudyServiceTest {
                 .id(1L)
                 .title("testStudy")
                 .content("testContent")
-                .maxParticipantsCount(6)
+                .maxStudyMemberCount(6)
                 .category(Category.PROGRAMMING)
                 .schedule("testSchedule")
                 .recruitmentStartDate(LocalDate.now())

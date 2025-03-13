@@ -1,4 +1,4 @@
-package com.mos.backend.studies.application;
+package com.mos.backend.common.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -9,6 +9,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class CustomPageableArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -19,7 +22,6 @@ public class CustomPageableArgumentResolver implements HandlerMethodArgumentReso
     private static final String PARAM_PAGE = "page";
     private static final String PARAM_SIZE = "size";
     private static final String PARAM_SORT = "sort";
-    private static final String PARAM_DIRECTION = "direction";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -49,16 +51,27 @@ public class CustomPageableArgumentResolver implements HandlerMethodArgumentReso
     }
 
     private Sort getSort(NativeWebRequest webRequest) {
-        String sortField = webRequest.getParameter(PARAM_SORT);
-        if (sortField == null || sortField.trim().isEmpty()) {
-            sortField = DEFAULT_SORT_FIELD;
+        String[] sortParams = webRequest.getParameterValues(PARAM_SORT);
+        if (sortParams == null || sortParams.length == 0) {
+            // 아무 sort 파라미터가 없으면 기본 정렬
+            return Sort.by(Sort.Direction.DESC, DEFAULT_SORT_FIELD);
         }
 
-        String direction = webRequest.getParameter(PARAM_DIRECTION);
-        if (direction == null || direction.trim().isEmpty()) {
-            direction = DEFAULT_SORT_DIRECTION;
+        List<Sort.Order> orders = new ArrayList<>();
+        for (String param : sortParams) {
+            if (param == null || param.isBlank()) continue;
+            // param 예시: "createdAt,desc"
+
+            String[] split = param.split(",");
+            String field = split[0];
+            // 방향값이 없으면 DESC로 기본 처리
+            String direction = (split.length > 1) ? split[1] : DEFAULT_SORT_DIRECTION;
+
+            Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+            orders.add(new Sort.Order(sortDirection, field));
         }
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        return Sort.by(sortDirection, sortField);
+
+        // 여러 Order 누적해서 Sort 생성
+        return Sort.by(orders);
     }
 }

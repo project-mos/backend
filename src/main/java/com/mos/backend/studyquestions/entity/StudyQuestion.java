@@ -25,7 +25,7 @@ public class StudyQuestion extends BaseAuditableEntity {
     private Study study;
 
     @Column(nullable = false)
-    private Long questionId;
+    private Long questionNum;
 
     @Column(nullable = false)
     private String question;
@@ -42,7 +42,7 @@ public class StudyQuestion extends BaseAuditableEntity {
     public static StudyQuestion create(Study study, Long questionId, String question, QuestionType type, QuestionOption options, boolean required) {
         StudyQuestion studyQuestion = new StudyQuestion();
         studyQuestion.study = study;
-        studyQuestion.questionId = questionId;
+        studyQuestion.questionNum = questionId;
         studyQuestion.question = question;
         studyQuestion.type = type;
         studyQuestion.options = options;

@@ -27,9 +27,9 @@ public class StudyCreateRequestDto {
   @NotBlank(message = "category 필수입니다.")
   private String category;
 
-  @NotNull(message = "maxParticipants 필수입니다.")
-  @Min(value = 1, message = "maxParticipants는 1보다 커야합니다.")
-  private Integer maxParticipants;
+  @NotNull(message = "maxStudyMemberCount는 필수입니다.")
+  @Min(value = 1, message = "mayStudyMemberCount는 1보다 커야합니다.")
+  private Integer maxStudyMemberCount;
 
   @NotNull(message = "recruitmentStartDate 필수입니다.")
   @FutureOrPresent(message = "recruitmentStartDate는 오늘 이후 날짜여야 합니다.")

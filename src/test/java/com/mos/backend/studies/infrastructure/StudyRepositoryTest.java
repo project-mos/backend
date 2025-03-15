@@ -132,7 +132,7 @@ class StudyRepositoryTest extends AbstractTestContainer{
 
         int count = pageNum * pageSize;
         for (StudiesResponseDto studiesResponseDto : content) {
-            assertThat(studiesResponseDto.getStudyId()).isEqualTo(totalCountAnswer - count);
+            assertThat(studiesResponseDto.getId()).isEqualTo(totalCountAnswer - count);
             System.out.println("studiesResponseDto = " + studiesResponseDto);
             count++;
         }

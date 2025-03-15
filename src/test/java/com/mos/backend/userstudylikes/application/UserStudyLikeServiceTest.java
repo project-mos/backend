@@ -1,6 +1,7 @@
 package com.mos.backend.userstudylikes.application;
 
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.userstudylikes.entity.UserStudyLike;
@@ -24,6 +25,9 @@ class UserStudyLikeServiceTest {
 
     @Mock
     private EntityFacade entityFacade;
+
+    @Mock
+    private HotStudyService hotStudyService;
 
     @InjectMocks
     private UserStudyLikeService userStudyLikeService;

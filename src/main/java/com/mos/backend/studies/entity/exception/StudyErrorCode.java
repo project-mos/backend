@@ -14,8 +14,8 @@ public enum StudyErrorCode implements ErrorCode {
     INVALID_MEETING_TYPE(HttpStatus.BAD_REQUEST, "study.meeting-type.invalid"),
     INVALID_RECRUITMENT_DATES(HttpStatus.BAD_REQUEST, "study.invalid-recruitment-dates"),
     INVALID_RECRUITMENT_STATUS(HttpStatus.BAD_REQUEST, "study.invalid-recruitment-status"),
-    INVALID_PROGRESS_STATUS(HttpStatus.BAD_REQUEST, "study.invalid-progress-status")
-    ;
+    INVALID_PROGRESS_STATUS(HttpStatus.BAD_REQUEST, "study.invalid-progress-status"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "study.internal-server-error");
     private final HttpStatus httpStatus;
     private final String messageKey;
 

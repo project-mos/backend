@@ -1,8 +1,12 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.utils.ClientInfoExtractor;
 import com.mos.backend.common.utils.RandomColorGenerator;
+import com.mos.backend.hotstudies.application.HotStudyService;
+import com.mos.backend.hotstudies.entity.HotStudyEventType;
+import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
@@ -25,6 +29,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +45,9 @@ public class StudyService {
     private final StudyQuestionService studyQuestionService;
     private final StudyCurriculumService studyCurriculumService;
     private final StudyMemberService studyMemberService;
+    private final HotStudyRepository hotStudyRepository;
+    private final HotStudyService hotStudyService;
+    private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
 
     /**
@@ -67,6 +77,8 @@ public class StudyService {
 
         Study study = findStudyById(studyId);
         int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
+
+        hotStudyService.handleEvent(HotStudyEventType.VIEW, studyId);
         return StudyResponseDto.from(study, studyMemberCount);
     }
 
@@ -79,6 +91,34 @@ public class StudyService {
         return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
     }
 
+    /**
+     * 인기 스터디 조회
+     * @return
+     */
+    @Transactional
+    public List<StudiesResponseDto> readHotStudies() {
+        return hotStudyRepository.readAll().stream()
+                .map(id -> {
+                    try {
+                        return this.getHotStudy(id);
+                    } catch (MosException e) {
+                        hotStudyRepository.remove(id);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public StudiesResponseDto getHotStudy(Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
+        return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
+    }
+
+    private void increaseViewCount(long studyId) {
+        studyRepository.increaseViewCount(studyId);
+    }
 
 
     private Study findStudyById(long studyId) {

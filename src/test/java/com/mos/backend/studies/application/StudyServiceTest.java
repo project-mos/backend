@@ -1,6 +1,8 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.hotstudies.application.HotStudyService;
+import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -62,6 +64,12 @@ class StudyServiceTest {
 
     @Mock
     private ViewCountService viewCountService;
+
+    @Mock
+    private HotStudyService hotStudyService;
+
+    @Mock
+    private HotStudyRepository hotStudyRepository;
 
     @InjectMocks
     private StudyService studyService;

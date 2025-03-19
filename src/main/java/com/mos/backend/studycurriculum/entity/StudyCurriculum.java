@@ -40,4 +40,10 @@ public class StudyCurriculum extends BaseAuditableEntity {
         studyCurriculum.content = content;
         return studyCurriculum;
     }
+
+    public void update(String title, Long sectionId, String content) {
+        this.title = title;
+        this.sectionId = sectionId;
+        this.content = content;
+    }
 }

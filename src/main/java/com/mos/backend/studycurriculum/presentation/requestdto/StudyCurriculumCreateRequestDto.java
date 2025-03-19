@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class StudyCurriculumCreateRequestDto {
+    private Long id;
     @NotNull(message = "sectionId 필수입니다.")
     @Min(value = 1, message = "sectionId는 1보다 커야합니다.")
     private Long sectionId;

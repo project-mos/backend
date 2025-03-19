@@ -116,11 +116,6 @@ public class StudyService {
         return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
     }
 
-    private void increaseViewCount(long studyId) {
-        studyRepository.increaseViewCount(studyId);
-    }
-
-
     private Study findStudyById(long studyId) {
         return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
@@ -152,7 +147,7 @@ public class StudyService {
         studyRuleService.create(savedStudyId, requestDto.getRules());
         studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
         studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
-        studyCurriculumService.create(savedStudyId, requestDto.getCurriculums());
+        studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
         studyMemberService.create(savedStudyId, userId);
     }
 }

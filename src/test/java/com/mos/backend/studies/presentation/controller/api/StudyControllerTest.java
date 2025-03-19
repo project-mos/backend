@@ -72,7 +72,7 @@ class StudyControllerTest {
 
         // 커리큘럼 추가
         dto.setCurriculums(List.of(
-                new StudyCurriculumCreateRequestDto(1L, "Spring 기초", "Spring Framework 기본 개념 학습")
+                new StudyCurriculumCreateRequestDto(1L, 1L, "Spring 기초", "Spring Framework 기본 개념 학습")
         ));
 
         // 질문 추가
@@ -117,6 +117,7 @@ class StudyControllerTest {
                                 fieldWithPath("schedule").type(JsonFieldType.STRING).description("스터디 일정"),
                                 fieldWithPath("requirements").type(JsonFieldType.VARIES).description("스터디 요구사항 (선택)"),
                                 fieldWithPath("curriculums").type(JsonFieldType.ARRAY).description("커리큘럼 목록"),
+                                fieldWithPath("curriculums[].id").type(JsonFieldType.NUMBER).description("커리큘럼 ID"),
                                 fieldWithPath("curriculums[].sectionId").type(JsonFieldType.NUMBER).description("커리큘럼 섹션 ID"),
                                 fieldWithPath("curriculums[].title").type(JsonFieldType.STRING).description("커리큘럼 제목"),
                                 fieldWithPath("curriculums[].content").type(JsonFieldType.STRING).description("커리큘럼 내용"),

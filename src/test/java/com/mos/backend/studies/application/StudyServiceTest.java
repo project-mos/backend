@@ -94,7 +94,7 @@ class StudyServiceTest {
 
         // 필수 리스트 초기화
         validRequestDto.setCurriculums(List.of(
-                new StudyCurriculumCreateRequestDto(1L,"Week 1", "Java Basics")
+                new StudyCurriculumCreateRequestDto(1L,1L,"Week 1", "Java Basics")
         ));
         validRequestDto.setRules(List.of("Rule 1", "Rule 2"));
         StudyBenefitRequestDto studyBenefitRequestDto = new StudyBenefitRequestDto();
@@ -131,7 +131,7 @@ class StudyServiceTest {
             verify(studyRuleService).create(eq(studyId), eq(validRequestDto.getRules()));
             verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
             verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
-            verify(studyCurriculumService).create(eq(studyId), eq(validRequestDto.getCurriculums()));
+            verify(studyCurriculumService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getCurriculums()));
             verify(studyMemberService).create(eq(studyId), eq(testUserId));
         }
     }

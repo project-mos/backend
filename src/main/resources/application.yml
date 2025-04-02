@@ -31,8 +31,8 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   access:
-    expiration: ${JWT_ACCESS_EXPIRATION}
-    cookie: ${JWT_ACCESS_COOKIE}
+    expiration: 3600 # 1시간
+    header: ${JWT_ACCESS_HEADER}
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
     cookie: ${JWT_REFRESH_COOKIE}

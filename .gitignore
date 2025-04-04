@@ -297,3 +297,4 @@ id_rsa
 
 # End of https://www.toptal.com/developers/gitignore/api/ssh
 
+serviceAccountKey.json

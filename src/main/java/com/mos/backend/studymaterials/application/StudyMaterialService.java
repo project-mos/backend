@@ -51,7 +51,7 @@ public class StudyMaterialService {
         StudyMaterial studyMaterial = StudyMaterial.create(study, studyMember, filePath, file.getOriginalFilename(), file.getSize());
         studyMaterialRepository.save(studyMaterial);
 
-        uploader.uploadFileAsync(uuidFileName, studyId, type, file);
+        uploader.uploadFileAsync(userId, uuidFileName, studyId, type, file);
 
         return ReadStudyMaterialResponseDto.from(studyMaterial);
     }

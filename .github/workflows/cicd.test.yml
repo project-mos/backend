@@ -47,6 +47,19 @@ jobs:
           echo "AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY_ID}}" >> .env
           echo "AWS_SECRET_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> .env
           echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .env
+          echo "FIREBASE_SERVICE_ACCOUNT_KEY_PATH=${{secrets.FIREBASE_SERVICE_ACCOUNT_KEY_PATH}}" >> .env
+
+      - name: Create firebase directory
+        run: mkdir -p src/main/resources/firebase
+
+      # create serviceAccountKey.json
+      - name: create serviceAccountKey.json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "serviceAccountKey.json"
+          json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          dir: 'src/main/resources/firebase'
 
       # Gradle 테스트 실행 (테스트가 실패하면 워크플로우가 중단됨)
       - name: Run tests

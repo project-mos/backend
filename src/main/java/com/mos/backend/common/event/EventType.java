@@ -1,6 +1,7 @@
 package com.mos.backend.common.event;
 
 public enum EventType {
+    FILE_UPLOADED,
     FILE_UPLOAD_FAILED,
     STUDY_CREATED,
     STUDY_LIKED,
@@ -8,5 +9,6 @@ public enum EventType {
     STUDY_VIEWED,
     STUDY_JOINED,
     STUDY_JOIN_CANCELED,
-    STUDY_DELETED
+    STUDY_DELETED,
+
 }

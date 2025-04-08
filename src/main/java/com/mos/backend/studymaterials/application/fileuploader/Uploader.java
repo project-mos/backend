@@ -10,7 +10,7 @@ public interface Uploader {
     String generateFileUrl(UploadType type, Long folderName, String fileName);
 
     String uploadFileSync(String fileName, Long folderName, UploadType type, MultipartFile file);
-    void uploadFileAsync(String fileName, Long folderName, UploadType type, MultipartFile file);
+    void uploadFileAsync(Long userId, String fileName, Long folderName, UploadType type, MultipartFile file);
 
     Path createTempFile(MultipartFile file);
     void deleteFile(String uriString);

@@ -47,7 +47,7 @@ class FileUploaderTest {
         }
 
         @Override
-        public void uploadFileAsync(String fileName, Long folderName, UploadType type, MultipartFile file) {
+        public void uploadFileAsync(Long userId, String fileName, Long folderName, UploadType type, MultipartFile file) {
 
         }
 

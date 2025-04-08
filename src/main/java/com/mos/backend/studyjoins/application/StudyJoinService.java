@@ -8,7 +8,7 @@ import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studyjoins.application.event.StudyJoinEventPayload;
+import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
@@ -59,7 +59,7 @@ public class StudyJoinService {
 
             saveQuestionAnswers(newStudyJoin, studyQuestion, studyJoinReq.getAnswer());
         }
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayload(HotStudyEventType.JOIN, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
     }
 
     @Transactional(readOnly = true)
@@ -109,7 +109,7 @@ public class StudyJoinService {
         validatePendingStatus(studyJoin);
 
         studyJoin.cancel();
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayload(HotStudyEventType.JOIN_CANCEL, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN_CANCEL, studyId)));
     }
 
     @Transactional(readOnly = true)

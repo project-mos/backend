@@ -4,6 +4,9 @@ import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.notifications.entity.NotificationLog;
+import com.mos.backend.notifications.entity.exception.NotificationLogErrorCode;
+import com.mos.backend.notifications.infrastructure.notificationlog.NotificationLogRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -56,6 +59,7 @@ public class EntityFacade {
     private final AttendanceRepository attendanceRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final StudyMaterialRepository studyMaterialRepository;
+    private final NotificationLogRepository notificationLogRepository;
     private final PrivateChatRoomRepository privateChatRoomRepository;
     private final StudyChatRoomRepository studyChatRoomRepository;
 
@@ -111,6 +115,10 @@ public class EntityFacade {
 
     public StudyMaterial getStudyMaterial(Long studyMaterialId) {
         return studyMaterialRepository.findById(studyMaterialId).orElseThrow(() -> new MosException(StudyMaterialErrorCode.STUDY_MATERIAL_NOT_FOUND));
+    }
+
+    public NotificationLog getNotificationLog(Long notificationId) {
+        return notificationLogRepository.findById(notificationId).orElseThrow(() -> new MosException(NotificationLogErrorCode.NOTIFICATION_LOG_NOT_FOUND));
     }
 
     public PrivateChatRoom getPrivateChatRoom(Long privateChatRoomId) {

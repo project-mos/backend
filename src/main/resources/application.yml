@@ -3,7 +3,7 @@ spring:
     name: backend
 
   messages:
-    basename: messages/messages-error
+    basename: messages/messages-error, messages/messages-notification
     encoding: UTF-8
     cache-duration: 3600
 
@@ -71,3 +71,6 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: ${AWS_S3_BUCKET}
+
+firebase:
+  service-account-key-path: ${FIREBASE_SERVICE_ACCOUNT_KEY_PATH}

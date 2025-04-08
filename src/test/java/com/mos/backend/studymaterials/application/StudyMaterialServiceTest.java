@@ -92,7 +92,7 @@ class StudyMaterialServiceTest {
         assertThat(savedMaterial.getOriginalName()).isEqualTo(ORIGINAL_FILENAME);
         assertThat(savedMaterial.getFileSize()).isEqualTo(FILE_SIZE);
 
-        verify(uploader).uploadFileAsync(eq("dummy-uuid.txt"), eq(STUDY_ID), eq(UploadType.STUDY), eq(mockMultipartFile));
+        verify(uploader).uploadFileAsync(eq(USER_ID), eq("dummy-uuid.txt"), eq(STUDY_ID), eq(UploadType.STUDY), eq(mockMultipartFile));
 
         assertThat(resultDto).isNotNull();
         assertThat(resultDto.getFilePath()).isEqualTo(FILE_PATH);
@@ -118,7 +118,7 @@ class StudyMaterialServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", StudyMaterialErrorCode.FILE_SIZE_EXCEEDED);
 
         verify(studyMaterialRepository, never()).save(any());
-        verify(uploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
+        verify(uploader, never()).uploadFileAsync(anyLong(), any(), anyLong(), any(), any());
     }
 
     @Test
@@ -138,7 +138,7 @@ class StudyMaterialServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", StudyMaterialErrorCode.TOTAL_STUDY_SIZE_EXCEEDED);
 
         verify(studyMaterialRepository, never()).save(any());
-        verify(uploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
+        verify(uploader, never()).uploadFileAsync(any(), any(), anyLong(), any(), any());
     }
 //
     @Test
@@ -161,7 +161,7 @@ class StudyMaterialServiceTest {
 
         // Then
         verify(studyMaterialRepository).save(any(StudyMaterial.class));
-        verify(uploader).uploadFileAsync(eq("uuid-other.png"), eq(STUDY_ID), eq(UploadType.TEMP), eq(largeFileButNotStudyType));
+        verify(uploader).uploadFileAsync(eq(USER_ID), eq("uuid-other.png"), eq(STUDY_ID), eq(UploadType.TEMP), eq(largeFileButNotStudyType));
         verify(studyMaterialRepository, never()).sumTotalFileSizeByStudy(any());
         assertThat(resultDto).isNotNull();
     }

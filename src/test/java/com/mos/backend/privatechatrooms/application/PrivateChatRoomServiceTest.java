@@ -3,7 +3,6 @@ package com.mos.backend.privatechatrooms.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
-import com.mos.backend.privatechatmessages.entity.PrivateChatMessageErrorCode;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
 import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
@@ -167,7 +166,7 @@ class PrivateChatRoomServiceTest {
             PrivateChatMessage privateChatMessage = mock(PrivateChatMessage.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
+            when(privateChatRoomRepository.findByRequesterOrReceiver(user)).thenReturn(List.of(privateChatRoom));
             when(privateChatRoom.getCounterpart(user)).thenReturn(counterpart);
             when(counterpart.getId()).thenReturn(2L);
             when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom))
@@ -179,7 +178,7 @@ class PrivateChatRoomServiceTest {
             // Then
             assertEquals(1, result.size());
             verify(entityFacade).getUser(userId);
-            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoomRepository).findByRequesterOrReceiver(user);
             verify(privateChatRoom).getCounterpart(user);
             verify(counterpart).getId();
             verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
@@ -195,7 +194,7 @@ class PrivateChatRoomServiceTest {
             User counterpart = mock(User.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
+            when(privateChatRoomRepository.findByRequesterOrReceiver(user)).thenReturn(List.of(privateChatRoom));
             when(privateChatRoom.getCounterpart(user)).thenReturn(counterpart);
             when(counterpart.getId()).thenReturn(2L);
             when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom))
@@ -207,7 +206,7 @@ class PrivateChatRoomServiceTest {
             // Then
             assertEquals(1, result.size());
             verify(entityFacade).getUser(userId);
-            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoomRepository).findByRequesterOrReceiver(user);
             verify(privateChatRoom).getCounterpart(user);
             verify(counterpart).getId();
             verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
@@ -221,7 +220,7 @@ class PrivateChatRoomServiceTest {
             User user = mock(User.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(Collections.emptyList());
+            when(privateChatRoomRepository.findByRequesterOrReceiver(user)).thenReturn(Collections.emptyList());
 
             // When
             List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
@@ -229,7 +228,7 @@ class PrivateChatRoomServiceTest {
             // Then
             assertTrue(result.isEmpty());
             verify(entityFacade).getUser(userId);
-            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoomRepository).findByRequesterOrReceiver(user);
             verifyNoMoreInteractions(privateChatRoomRepository, privateChatMessageRepository);
         }
     }

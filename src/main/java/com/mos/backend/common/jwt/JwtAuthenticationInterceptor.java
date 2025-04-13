@@ -21,6 +21,8 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
         switch (accessor.getCommand()) {
             case CONNECT:
                 handleConnectCommand(accessor);
+            case SEND:
+                handleSendCommand(accessor);
         }
 
         return message;
@@ -30,9 +32,23 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
         validateToken(accessor);
     }
 
-    private void validateToken(StompHeaderAccessor accessor) {
+    private Long validateToken(StompHeaderAccessor accessor) {
         String accessToken = tokenUtil.extractAccessToken(accessor);
         DecodedJWT decodedJWT = tokenUtil.decodedJWT(accessToken);
-        decodedJWT.getClaim("id").asLong();
+        return getUserId(decodedJWT);
+    }
+
+    private void handleSendCommand(StompHeaderAccessor accessor) {
+        Long userId = validateToken(accessor);
+
+        addUserIdInSession(accessor, userId);
+    }
+
+    private static Long getUserId(DecodedJWT decodedJWT) {
+        return decodedJWT.getClaim("id").asLong();
+    }
+
+    private static void addUserIdInSession(StompHeaderAccessor accessor, Long userId) {
+        accessor.getSessionAttributes().put("userId", userId);
     }
 }

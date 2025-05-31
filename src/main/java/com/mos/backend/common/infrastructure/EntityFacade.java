@@ -20,6 +20,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomRepository;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
@@ -34,6 +35,7 @@ import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
@@ -95,12 +97,12 @@ public class EntityFacade {
 
     public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
         return studyCurriculumRepository.findById(studyCurriculumId)
-                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new MosException(StudyCurriculumErrorCode.STUDY_CURRICULUM_NOT_FOUND));
     }
 
     public StudySchedule getStudySchedule(Long studyScheduleId) {
         return studyScheduleRepository.findById(studyScheduleId)
-                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new MosException(StudyScheduleErrorCode.STUDY_SCHEDULE_NOT_FOUND));
     }
 
     public Attendance getAttendance(Long attendanceId) {

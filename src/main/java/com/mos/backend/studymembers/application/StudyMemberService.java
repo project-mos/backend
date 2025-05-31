@@ -14,6 +14,7 @@ import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,6 +113,7 @@ public class StudyMemberService {
     public StudyMember findByStudyAndUser(Study study, User user) {
         return studyMemberRepository.findByStudyAndUser(study, user).orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
     }
+
     private static LocalDate getLastAttendanceDate(List<Attendance> attendances) {
         return attendances.stream()
                 .map(Attendance::getModifiedAt)
@@ -124,5 +126,11 @@ public class StudyMemberService {
         Study study = entityFacade.getStudy(studyId);
         List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
         return studyMemberRepository.countByStudyAndStatusIn(study, currentParticipationStatusList);
+    }
+
+    public void validateStudyMember(User user, Study study) {
+        if (!studyMemberRepository.existsByUserAndStudy(user, study)) {
+            throw new MosException(UserErrorCode.USER_FORBIDDEN);
+        }
     }
 }

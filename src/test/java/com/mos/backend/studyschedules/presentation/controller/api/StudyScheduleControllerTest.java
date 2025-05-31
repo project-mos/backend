@@ -117,6 +117,7 @@ class StudyScheduleControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(
                                                 new StudyScheduleUpdateReq(
+                                                        List.of(1L, 2L, 3L),
                                                         "스터디 일정 제목",
                                                         "스터디 일정 설명",
                                                         LocalDateTime.now().plusHours(1),
@@ -133,6 +134,7 @@ class StudyScheduleControllerTest {
                                 parameterWithName("studyScheduleId").description("스터디 스케쥴 ID")
                         ),
                         requestFields(
+                                fieldWithPath("curriculumIds").description("커리큘럼 ID 목록"),
                                 fieldWithPath("title").description("일정 제목"),
                                 fieldWithPath("description").optional().description("일정 설명"),
                                 fieldWithPath("startDateTime").description("시작 일시 (현재 시간 이후)"),

@@ -20,8 +20,8 @@ public class StudyScheduleController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/studies/{studyId}/schedules")
     public void createStudySchedule(@AuthenticationPrincipal Long userId,
-                                                @PathVariable Long studyId,
-                                                @Valid @RequestBody StudyScheduleCreateReq req) {
+                                    @PathVariable Long studyId,
+                                    @Valid @RequestBody StudyScheduleCreateReq req) {
         studyScheduleService.createStudySchedule(userId, studyId, req);
     }
 

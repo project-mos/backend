@@ -11,7 +11,7 @@ import java.util.Locale;
 public enum StudyScheduleErrorCode implements ErrorCode {
     STUDY_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "study-schedule.not-found"),
     STUDY_SCHEDULE_COMPLETED(HttpStatus.BAD_REQUEST, "study-schedule.completed"),
-    ;
+    INVALID_END_DATE_TIME(HttpStatus.BAD_REQUEST, "study-schedule.invalid-end-date-time"),;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

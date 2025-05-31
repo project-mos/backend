@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class StudyScheduleUpdateReq {
+    private List<Long> curriculumIds;
     @NotBlank(message = "제목은 필수입니다.")
     private String title;
     private String description;

@@ -1,14 +1,19 @@
 package com.mos.backend.studyschedules.application;
 
+import com.amazonaws.util.CollectionUtils;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
+import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
+import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
@@ -17,13 +22,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
 public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
+    private final StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
+    private final StudyMemberService studyMemberService;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -31,9 +40,20 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        saveScheduleCurriculums(req, study);
+        studyMemberService.validateStudyMember(user, study);
+        validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
-        saveStudySchedule(req, study);
+        StudySchedule studySchedule = saveStudySchedule(req, study);
+
+        List<Long> curriculumIds = req.getCurriculumIds();
+        if (!CollectionUtils.isNullOrEmpty(curriculumIds))
+            saveScheduleCurriculums(curriculumIds, study, studySchedule);
+    }
+
+    private static void validateEndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (!Objects.isNull(endDateTime))
+            if (!endDateTime.isAfter(startDateTime))
+                throw new MosException(StudyScheduleErrorCode.INVALID_END_DATE_TIME);
     }
 
     @Transactional(readOnly = true)
@@ -69,7 +89,14 @@ public class StudyScheduleService {
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
-        validateRelationalStudy(study, studySchedule.getStudy().getId());
+        validateRelation(study, studySchedule.getStudy().getId());
+        studyMemberService.validateStudyMember(user, study);
+        validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
+
+        List<Long> curriculumIds = req.getCurriculumIds();
+        if (!CollectionUtils.isNullOrEmpty(curriculumIds))
+            //todo 기존 커리큘럼 삭제
+            saveScheduleCurriculums(curriculumIds, study, studySchedule);
 
         studySchedule.update(req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime());
     }
@@ -80,28 +107,33 @@ public class StudyScheduleService {
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
-        validateRelationalStudy(study, studySchedule.getStudy().getId());
+        studyMemberService.validateStudyMember(user, study);
+
+        validateRelation(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
     }
 
-    private void saveScheduleCurriculums(StudyScheduleCreateReq req, Study study) {
-        req.getCurriculumIds().forEach((curriculumId) -> {
+    private void saveScheduleCurriculums(List<Long> curriculumIds, Study study, StudySchedule studySchedule) {
+        curriculumIds.forEach((curriculumId) -> {
             StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(curriculumId);
-            validateRelationalStudy(study, studyCurriculum.getStudy().getId());
-            studyCurriculumRepository.save(studyCurriculum);
+
+            validateRelation(study, studyCurriculum.getStudy().getId());
+
+            StudyScheduleCurriculum studyScheduleCurriculum = StudyScheduleCurriculum.create(studySchedule, studyCurriculum);
+            studyScheduleCurriculumRepository.save(studyScheduleCurriculum);
         });
     }
 
-    private void saveStudySchedule(StudyScheduleCreateReq req, Study study) {
+    private StudySchedule saveStudySchedule(StudyScheduleCreateReq req, Study study) {
         StudySchedule studySchedule = StudySchedule.create(
                 study, req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime()
         );
 
-        studyScheduleRepository.save(studySchedule);
+        return studyScheduleRepository.save(studySchedule);
     }
 
-    public void validateRelationalStudy(Study study, Long studyId) {
+    public void validateRelation(Study study, Long studyId) {
         if (!study.isRelated(studyId))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
     }

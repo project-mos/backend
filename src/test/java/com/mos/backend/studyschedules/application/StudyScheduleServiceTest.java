@@ -6,6 +6,9 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
+import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
+import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
@@ -34,6 +37,10 @@ class StudyScheduleServiceTest {
     private StudyCurriculumRepository studyCurriculumRepository;
     @Mock
     private EntityFacade entityFacade;
+    @Mock
+    private StudyMemberService studyMemberService;
+    @Mock
+    private StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
     @InjectMocks
     private StudyScheduleService studyScheduleService;
 
@@ -55,8 +62,11 @@ class StudyScheduleServiceTest {
 
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getStudyCurriculum(anyLong())).thenReturn(mockCurriculum);
             when(req.getCurriculumIds()).thenReturn(curriculumIds);
+            when(entityFacade.getStudyCurriculum(anyLong())).thenReturn(mockCurriculum);
+            when(mockCurriculum.getStudy()).thenReturn(mockStudy);
+            when(mockStudy.getId()).thenReturn(studyId);
+            when(mockStudy.isRelated(studyId)).thenReturn(true);
             when(mockCurriculum.getStudy()).thenReturn(mockStudy);
             when(mockStudy.getId()).thenReturn(studyId);
             when(mockStudy.isRelated(studyId)).thenReturn(true);
@@ -69,7 +79,7 @@ class StudyScheduleServiceTest {
             verify(entityFacade).getStudy(studyId);
             verify(req).getCurriculumIds();
             verify(entityFacade, times(curriculumIds.size())).getStudyCurriculum(anyLong());
-            verify(studyCurriculumRepository, times(curriculumIds.size())).save(mockCurriculum);
+            verify(studyScheduleCurriculumRepository, times(curriculumIds.size())).save(any(StudyScheduleCurriculum.class));
             verify(studyScheduleRepository).save(any(StudySchedule.class));
         }
     }
@@ -107,8 +117,8 @@ class StudyScheduleServiceTest {
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(req).getCurriculumIds();
+            verify(studyScheduleRepository).save(any(StudySchedule.class));
             verify(entityFacade, times(1)).getStudyCurriculum(anyLong());
-            verify(studyScheduleRepository, never()).save(any(StudySchedule.class));
         }
     }
 

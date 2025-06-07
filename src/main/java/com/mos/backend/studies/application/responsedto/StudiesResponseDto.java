@@ -16,6 +16,8 @@ public class StudiesResponseDto {
     private String meetingType;
     private String progressStatus;
     private String recruitmentStatus;
+    private String content;
+    private LocalDate recruitmentStartDate;
     private LocalDate recruitmentEndDate;
     private Long currentStudyMembers;
     private Integer maxStudyMembers;
@@ -23,13 +25,15 @@ public class StudiesResponseDto {
     private List<String> tags;
 
     public StudiesResponseDto(Long studyId, String title, Category category, MeetingType meetingType, ProgressStatus progressStatus,
-                              RecruitmentStatus recruitmentStatus, LocalDate recruitmentEndDate, Long currentStudyMembers, Integer maxStudyMembers, Integer viewCount, StudyTag tags) {
+                              RecruitmentStatus recruitmentStatus, String  content, LocalDate recruitmentStartDate, LocalDate recruitmentEndDate, Long currentStudyMembers, Integer maxStudyMembers, Integer viewCount, StudyTag tags) {
         this.id = studyId;
         this.title = title;
         this.category = category.getDescription();
         this.meetingType = meetingType.getDescription();
         this.progressStatus = progressStatus.getDescription();
         this.recruitmentStatus = recruitmentStatus.getDescription();
+        this.content = content;
+        this.recruitmentStartDate = recruitmentStartDate;
         this.recruitmentEndDate = recruitmentEndDate;
         this.currentStudyMembers = currentStudyMembers;
         this.maxStudyMembers = maxStudyMembers;
@@ -45,6 +49,8 @@ public class StudiesResponseDto {
         studiesResponseDto.meetingType = study.getMeetingType().getDescription();
         studiesResponseDto.progressStatus = study.getProgressStatus().getDescription();
         studiesResponseDto.recruitmentStatus = study.getRecruitmentStatus().getDescription();
+        studiesResponseDto.content = study.getContent();
+        studiesResponseDto.recruitmentStartDate = study.getRecruitmentStartDate();
         studiesResponseDto.recruitmentEndDate = study.getRecruitmentEndDate();
         studiesResponseDto.currentStudyMembers = currentStudyMembers;
         studiesResponseDto.maxStudyMembers = study.getMaxStudyMemberCount();

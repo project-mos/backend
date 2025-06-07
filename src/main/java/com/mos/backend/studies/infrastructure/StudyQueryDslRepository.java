@@ -55,6 +55,8 @@ public class StudyQueryDslRepository {
                         study.meetingType,
                         study.progressStatus,
                         study.recruitmentStatus,
+                        study.content,
+                        study.recruitmentStartDate,
                         study.recruitmentEndDate,
                         JPAExpressions
                                 .select(studyMember.count())

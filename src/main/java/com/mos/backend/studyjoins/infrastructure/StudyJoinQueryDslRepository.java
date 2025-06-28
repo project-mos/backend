@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.mos.backend.studyjoins.entity.QStudyJoin.studyJoin;
+import static com.querydsl.core.util.StringUtils.isNullOrEmpty;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,17 +18,33 @@ public class StudyJoinQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<StudyJoin> findAllByUserIdAndStatus(Long userId, StudyJoinStatus status) {
+    public List<StudyJoin> findAllByUserIdAndStatus(Long userId, String StudyJoinStatusCond) {
         return queryFactory
                 .selectFrom(studyJoin)
                 .join(studyJoin.study).fetchJoin()
-                .where(studyJoin.user.id.eq(userId))
-                .where(eqStatus(status))
+                .where(eqUserId(userId))
+                .where(eqStatus(StudyJoinStatusCond))
                 .fetch();
-
     }
 
-    private static BooleanExpression eqStatus(StudyJoinStatus status) {
-        return status == null ? null : studyJoin.status.eq(status);
+    public List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, String StudyJoinStatusCond) {
+        return queryFactory
+                .selectFrom(studyJoin)
+                .join(studyJoin.study).fetchJoin()
+                .where(eqStudyId(studyId))
+                .where(eqStatus(StudyJoinStatusCond))
+                .fetch();
+    }
+
+    private static BooleanExpression eqStudyId(Long studyId) {
+        return studyJoin.study.id.eq(studyId);
+    }
+
+    private static BooleanExpression eqUserId(Long userId) {
+        return studyJoin.user.id.eq(userId);
+    }
+
+    private static BooleanExpression eqStatus(String StudyJoinStatusCond) {
+        return isNullOrEmpty(StudyJoinStatusCond) ? null : studyJoin.status.eq(StudyJoinStatus.fromDescription(StudyJoinStatusCond));
     }
 }

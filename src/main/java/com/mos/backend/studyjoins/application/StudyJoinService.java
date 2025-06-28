@@ -4,17 +4,14 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
-import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.application.event.StudyJoinCreatedEventPayload;
-import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoin;
-import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
@@ -112,10 +109,10 @@ public class StudyJoinService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public List<StudyJoinRes> getStudyJoins(Long studyId) {
+    public List<StudyJoinRes> getStudyJoins(Long studyId, String studyJoinStatusCond) {
         Study study = entityFacade.getStudy(studyId);
 
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyIdAndStatus(study.getId(), studyJoinStatusCond);
 
         return studyJoins.stream()
                 .map(studyJoin -> {
@@ -162,15 +159,10 @@ public class StudyJoinService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
-    public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String status) {
+    public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String studyJoinStatusCond) {
         User user = entityFacade.getUser(userId);
 
-        StudyJoinStatus studyJoinStatus = null;
-        if (status != null && !status.isBlank()) {
-            studyJoinStatus = StudyJoinStatus.fromDescription(status);
-        }
-
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(userId, studyJoinStatus);
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(userId, studyJoinStatusCond);
 
         return studyJoins.stream().map(MyStudyJoinRes::from).toList();
     }

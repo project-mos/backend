@@ -29,7 +29,7 @@ public class MyStudyJoinRes {
         myStudyJoinRes.category = study.getCategory().getDescription();
 
         myStudyJoinRes.studyJoinId = studyJoin.getId();
-        myStudyJoinRes.studyJoinStatus = studyJoin.getStatus().name();
+        myStudyJoinRes.studyJoinStatus = studyJoin.getStatus().getDescription();
         myStudyJoinRes.createdAt = studyJoin.getCreatedAt();
 
         return myStudyJoinRes;

@@ -1,7 +1,6 @@
 package com.mos.backend.studyjoins.infrastructure;
 
 import com.mos.backend.studyjoins.entity.StudyJoin;
-import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -25,13 +24,13 @@ public class StudyJoinRepositoryImpl implements StudyJoinRepository {
     }
 
     @Override
-    public List<StudyJoin> findAllByUserIdAndStatus(Long userId, StudyJoinStatus status) {
-        return studyJoinQueryDslRepository.findAllByUserIdAndStatus(userId, status);
+    public List<StudyJoin> findAllByUserIdAndStatus(Long userId, String StudyJoinStatusCond) {
+        return studyJoinQueryDslRepository.findAllByUserIdAndStatus(userId, StudyJoinStatusCond);
     }
 
     @Override
-    public List<StudyJoin> findAllByStudyId(Long studyId) {
-        return studyJoinJpaRepository.findAllByStudyId(studyId);
+    public List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, String StudyJoinStatusCond) {
+        return studyJoinQueryDslRepository.findAllByStudyIdAndStatus(studyId, StudyJoinStatusCond);
     }
 
     @Override

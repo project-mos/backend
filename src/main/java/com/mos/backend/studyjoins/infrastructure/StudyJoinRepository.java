@@ -1,7 +1,6 @@
 package com.mos.backend.studyjoins.infrastructure;
 
 import com.mos.backend.studyjoins.entity.StudyJoin;
-import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +10,9 @@ public interface StudyJoinRepository {
 
     Optional<StudyJoin> findById(Long studyApplicationId);
 
-    List<StudyJoin> findAllByUserIdAndStatus(Long userId, StudyJoinStatus status);
-
-    List<StudyJoin> findAllByStudyId(Long studyId);
+    List<StudyJoin> findAllByUserIdAndStatus(Long userId, String StudyJoinStatusCond);
 
     boolean existsByUserIdAndStudyId(Long userId, Long studyId);
+
+    List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, String StudyJoinStatusCond);
 }

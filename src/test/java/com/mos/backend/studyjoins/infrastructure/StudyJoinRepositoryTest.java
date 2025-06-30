@@ -51,7 +51,7 @@ class StudyJoinRepositoryTest extends AbstractTestContainer {
         StudyJoin studyJoin3 = saveStudyJoin(user1, study1, StudyJoinStatus.APPROVED);
 
         // When
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(user1.getId(), StudyJoinStatus.PENDING);
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(user1.getId(), StudyJoinStatus.PENDING.getDescription());
 
         // Then
         assertThat(studyJoins).hasSize(2);

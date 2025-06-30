@@ -27,14 +27,14 @@ public class StudyJoinController {
 
     @GetMapping("/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam(required = false) String studyJoinStatus) {
-        return studyJoinService.getMyStudyJoins(userId, studyJoinStatus);
+    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam(required = false) String studyJoinStatusCond) {
+        return studyJoinService.getMyStudyJoins(userId, studyJoinStatusCond);
     }
 
     @GetMapping("/studies/{studyId}/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<StudyJoinRes> getStudyJoins(@PathVariable Long studyId) {
-        return studyJoinService.getStudyJoins(studyId);
+    public List<StudyJoinRes> getStudyJoins(@PathVariable Long studyId, @RequestParam(required = false) String studyJoinStatusCond) {
+        return studyJoinService.getStudyJoins(studyId, studyJoinStatusCond);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")

@@ -16,7 +16,7 @@ public interface StudyRepository {
 
     void increaseViewCount(long studyId);
 
-    Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond);
+    Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked);
 
     long count();
 

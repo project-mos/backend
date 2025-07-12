@@ -36,8 +36,8 @@ public class StudyRepositoryImpl implements StudyRepository{
     }
 
     @Override
-    public Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
-        return studyQueryDSLRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
+    public Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked) {
+        return studyQueryDSLRepository.findStudies(currentUserId, pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond, liked);
     }
 
     @Override

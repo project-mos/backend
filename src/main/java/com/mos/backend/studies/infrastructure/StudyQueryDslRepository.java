@@ -24,6 +24,7 @@ import java.util.List;
 
 import static com.mos.backend.studies.entity.QStudy.study;
 import static com.mos.backend.studymembers.entity.QStudyMember.studyMember;
+import static com.mos.backend.userstudylikes.entity.QUserStudyLike.userStudyLike;
 import static com.querydsl.core.util.StringUtils.isNullOrEmpty;
 
 @Repository
@@ -32,7 +33,7 @@ public class StudyQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
+    public Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked) {
         List<Long> findStudyId = jpaQueryFactory
                 .select(study.id)
                 .from(study)
@@ -40,7 +41,8 @@ public class StudyQueryDslRepository {
                         categoryEq(categoryCond),
                         meetingTypeEq(meetingTypeCond),
                         recruitmentStatusEq(recruitmentStatusCond),
-                        progressStatusEq(progressStatusCond)
+                        progressStatusEq(progressStatusCond),
+                        likedStudy(currentUserId, liked)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -139,5 +141,18 @@ public class StudyQueryDslRepository {
 
     private static OrderSpecifier[] getOrderSpecifiers(Pageable pageable) {
         return QueryDslSortUtil.toOrderSpecifiers(pageable.getSort(), Study.class).toArray(new OrderSpecifier[0]);
+    }
+
+    private BooleanExpression likedStudy(Long currentUserId, boolean liked) {
+        if (!liked || currentUserId == null) {
+            return null;
+        }
+
+        return study.id.in(
+                JPAExpressions
+                        .select(userStudyLike.study.id)
+                        .from(userStudyLike)
+                        .where(userStudyLike.user.id.eq(currentUserId))
+        );
     }
 }

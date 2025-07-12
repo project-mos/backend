@@ -18,7 +18,9 @@ public enum StudyErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "study.internal-server-error"),
     UNRELATED_STUDY(HttpStatus.BAD_REQUEST, "study.unrelated-study"),
     NOT_IN_RECRUITMENT_PERIOD(HttpStatus.BAD_REQUEST, "study.not-in-recruitment-period"),
-    RECRUITMENT_CLOSED(HttpStatus.BAD_REQUEST, "study.recruitment-closed"),;
+    RECRUITMENT_CLOSED(HttpStatus.BAD_REQUEST, "study.recruitment-closed"),
+    LOGIN_REQUIRED_FOR_LIKE_FILTER(HttpStatus.UNAUTHORIZED, "study.filter.like.login-required")
+    ;
 
 
     private final HttpStatus httpStatus;

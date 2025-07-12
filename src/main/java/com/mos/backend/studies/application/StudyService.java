@@ -21,12 +21,16 @@ import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.exception.UserErrorCode;
+import com.querydsl.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.Querydsl;
+import org.springframework.data.querydsl.QuerydslUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,8 +106,11 @@ public class StudyService {
      * 스터디 다 건 조회
      */
 
-    public StudyCardListResponseDto findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
-        Page<StudiesResponseDto> studies = studyRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
+    public StudyCardListResponseDto findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked) {
+        if (currentUserId == null && liked) {
+            throw new MosException(StudyErrorCode.LOGIN_REQUIRED_FOR_LIKE_FILTER);
+        }
+        Page<StudiesResponseDto> studies = studyRepository.findStudies(currentUserId, pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond, liked);
         return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
     }
 

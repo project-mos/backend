@@ -51,13 +51,14 @@ public class StudyController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public StudyCardListResponseDto findStudies(
+            @AuthenticationPrincipal Long currentUserId,
             Pageable pageable,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String meetingType,
             @RequestParam(required = false) String recruitmentStatus,
             @RequestParam(required = false) String progressStatus,
-            @RequestParam(required = false) Boolean liked) {
-        return studyService.findStudies(pageable, category, meetingType, recruitmentStatus, progressStatus);
+            @RequestParam(required = false, defaultValue = "false") Boolean liked) {
+        return studyService.findStudies(currentUserId, pageable, category, meetingType, recruitmentStatus, progressStatus, liked);
     }
 
     /**

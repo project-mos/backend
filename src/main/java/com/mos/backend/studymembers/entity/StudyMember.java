@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.FetchType.LAZY;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
@@ -39,6 +41,8 @@ public class StudyMember extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StudyMemberRoleType roleType;
+
+    private LocalDateTime lastEntryAt = LocalDateTime.now();
 
     public static StudyMember createStudyLeader(Study study, User user) {
         StudyMember studyMember = new StudyMember();
@@ -76,5 +80,9 @@ public class StudyMember extends BaseAuditableEntity {
 
     public void changeToLeader() {
         roleType = StudyMemberRoleType.LEADER;
+    }
+
+    public void updateLastEntryAt() {
+        this.lastEntryAt = LocalDateTime.now();
     }
 }

@@ -7,6 +7,8 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.notifications.entity.NotificationLog;
 import com.mos.backend.notifications.entity.exception.NotificationLogErrorCode;
 import com.mos.backend.notifications.infrastructure.notificationlog.NotificationLogRepository;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
+import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -64,6 +66,7 @@ public class EntityFacade {
     private final StudyMaterialRepository studyMaterialRepository;
     private final NotificationLogRepository notificationLogRepository;
     private final PrivateChatRoomRepository privateChatRoomRepository;
+    private final PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     private final StudyChatRoomRepository studyChatRoomRepository;
 
     public User getUser(Long userId) {
@@ -139,4 +142,7 @@ public class EntityFacade {
                 .orElseThrow(() -> new MosException(StudyChatRoomErrorCode.NOT_FOUND));
     }
 
+    public PrivateChatRoomMember getPrivateChatRoomMember(Long userId, Long privateChatRoomId) {
+        return privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId);
+    }
 }

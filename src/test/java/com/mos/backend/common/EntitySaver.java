@@ -2,6 +2,8 @@ package com.mos.backend.common;
 
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
+import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class EntitySaver {
@@ -61,6 +64,8 @@ public class EntitySaver {
     private StudyQuestionRepository studyQuestionRepository;
     @Autowired
     private PrivateChatRoomRepository privateChatRoomRepository;
+    @Autowired
+    private PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     @Autowired
     private PrivateChatMessageRepository privateChatMessageRepository;
     @Autowired
@@ -137,9 +142,9 @@ public class EntitySaver {
         );
     }
 
-    public PrivateChatRoom savePrivateChatRoom(User user1, User user2) {
+    public PrivateChatRoom savePrivateChatRoom() {
         return privateChatRoomRepository.save(
-                PrivateChatRoom.createInvisibleChatRoom(user1, user2)
+                PrivateChatRoom.createInvisibleChatRoom(UUID.randomUUID().toString())
         );
     }
 
@@ -150,12 +155,19 @@ public class EntitySaver {
     }
 
     public StudyChatRoom saveStudyChatRoom(Study study) {
-        return studyChatRoomRepository.save(StudyChatRoom.create(study));
+        String title = study.getTitle();
+        return studyChatRoomRepository.save(StudyChatRoom.create(study, title));
     }
 
     public StudyChatMessage saveStudyChatMessage(User user, StudyChatRoom studyChatRoom, String message) {
         return studyChatMessageRepository.save(
                 StudyChatMessage.of(user, studyChatRoom, message)
+        );
+    }
+
+    public PrivateChatRoomMember savePrivateChatRoomMember(User user, PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberRepository.save(
+                PrivateChatRoomMember.of(privateChatRoom, user)
         );
     }
 }

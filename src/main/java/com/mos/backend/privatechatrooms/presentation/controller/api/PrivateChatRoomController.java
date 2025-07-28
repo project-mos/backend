@@ -1,15 +1,14 @@
 package com.mos.backend.privatechatrooms.presentation.controller.api;
 
 import com.mos.backend.privatechatrooms.application.PrivateChatRoomService;
-import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
-import com.mos.backend.privatechatrooms.presentation.req.PrivateChatRoomCreateReq;
+import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
+import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomIdRes;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,34 +16,13 @@ import java.util.List;
 public class PrivateChatRoomController {
     private final PrivateChatRoomService privateChatRoomService;
 
-    private static final String BASE_URL = "/private-chat-rooms/";
-
-    @PostMapping("/private-chat-rooms")
-    public ResponseEntity<Void> create(@AuthenticationPrincipal Long userId, @RequestBody PrivateChatRoomCreateReq privateChatRoomCreateReq) {
-        Long privateChatRoomId = privateChatRoomService.create(userId, privateChatRoomCreateReq);
-        return ResponseEntity.created(URI.create(BASE_URL + privateChatRoomId)).build();
-    }
-
-    @GetMapping("/private-chat-rooms/search")
-    public Long getPrivateChatRoomId(@AuthenticationPrincipal Long userId, @RequestParam Long counterpartId) {
-        return privateChatRoomService.getPrivateChatRoomId(userId, counterpartId);
+    @GetMapping("/users/{userId}/private-chat-rooms")
+    public PrivateChatRoomIdRes getPrivateChatRoomId(@AuthenticationPrincipal Long loginId, @PathVariable Long userId) {
+        return privateChatRoomService.getPrivateChatRoomId(loginId, userId);
     }
 
     @GetMapping("/private-chat-rooms")
-    public List<PrivateChatRoomRes> getMyPrivateChatRooms(@AuthenticationPrincipal Long userId) {
+    public List<MyPrivateChatRoomRes> getMyPrivateChatRooms(@AuthenticationPrincipal Long userId) {
         return privateChatRoomService.getMyPrivateChatRooms(userId);
     }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/private-chat-rooms/{privateChatRoomId}")
-    public void enter(@AuthenticationPrincipal Long userId, @PathVariable Long privateChatRoomId) {
-        privateChatRoomService.enter(userId, privateChatRoomId);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/private-chat-rooms/{privateChatRoomId}")
-    public void leave(@AuthenticationPrincipal Long userId, @PathVariable Long privateChatRoomId) {
-        privateChatRoomService.leave(userId, privateChatRoomId);
-    }
-
 }

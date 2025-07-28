@@ -1,9 +1,6 @@
 package com.mos.backend.privatechatrooms.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
-import com.mos.backend.common.exception.MosException;
-import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,33 +17,20 @@ public class PrivateChatRoom extends BaseAuditableEntity {
     @Column(name = "private_chat_room_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "requester_id")
-    private User requester;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "receiver_id")
-    private User receiver;
+    @Column(nullable = false)
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private PrivateChatRoomStatus status;
 
-    public static PrivateChatRoom createInvisibleChatRoom(User requester, User receiver) {
+    public static PrivateChatRoom createInvisibleChatRoom(String name) {
         PrivateChatRoom privateChatRoom = new PrivateChatRoom();
-        privateChatRoom.requester = requester;
-        privateChatRoom.receiver = receiver;
         privateChatRoom.status = PrivateChatRoomStatus.INVISIBLE;
+        privateChatRoom.name = name;
         return privateChatRoom;
     }
 
     public void visible() {
         status = PrivateChatRoomStatus.VISIBLE;
-    }
-
-    public User getCounterpart(User user) {
-        if (!user.equals(requester) && !user.equals(receiver)) {
-            throw new MosException(UserErrorCode.USER_FORBIDDEN);
-        }
-        return user.equals(requester) ? receiver : requester;
     }
 }

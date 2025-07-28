@@ -42,7 +42,9 @@ public class PrivateChatMessageServiceTest extends AbstractTestContainer {
             Long lastPrivateChatMessageId = null;
             User user1 = entitySaver.saveUser();
             User user2 = entitySaver.saveUser();
-            PrivateChatRoom privateChatRoom = entitySaver.savePrivateChatRoom(user1, user2);
+            PrivateChatRoom privateChatRoom = entitySaver.savePrivateChatRoom();
+            entitySaver.savePrivateChatRoomMember(user1, privateChatRoom);
+            entitySaver.savePrivateChatRoomMember(user2, privateChatRoom);
             savePrivateChatMessages(user1, privateChatRoom, size);
             savePrivateChatMessages(user2, privateChatRoom, size);
 

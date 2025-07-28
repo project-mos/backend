@@ -12,7 +12,8 @@ import java.util.Locale;
 @Getter
 public enum StudyChatRoomErrorCode implements ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "study-chat-room.not-found"),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "study-chat-room.forbidden"),;
+    FORBIDDEN(HttpStatus.FORBIDDEN, "study-chat-room.forbidden"),
+    INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "study-chat-room.info-not-found"),;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

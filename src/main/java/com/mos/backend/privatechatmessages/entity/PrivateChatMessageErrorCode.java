@@ -12,7 +12,7 @@ import java.util.Locale;
 @Getter
 public enum PrivateChatMessageErrorCode implements ErrorCode {
     DESERIALIZATION_FAILED(HttpStatus.BAD_REQUEST, "private-chat-message.deserialization-failed"),
-    ;
+    NOT_FOUND(HttpStatus.NOT_FOUND, "private-chat-message.not-found"),;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

@@ -13,7 +13,8 @@ import java.util.Locale;
 public enum PrivateChatRoomErrorCode implements ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "private-chat-room.not-found"),
     CONFLICT(HttpStatus.CONFLICT, "private-chat-room.conflict"),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "private-chat-room.forbidden" ),;
+    FORBIDDEN(HttpStatus.FORBIDDEN, "private-chat-room.forbidden" ),
+    INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "private-chat-room.info-not-found");
 
     private final HttpStatus httpStatus;
     private final String messageKey;

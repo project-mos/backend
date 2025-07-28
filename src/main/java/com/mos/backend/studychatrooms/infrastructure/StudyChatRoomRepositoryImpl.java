@@ -4,6 +4,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -19,5 +20,10 @@ public class StudyChatRoomRepositoryImpl implements StudyChatRoomRepository {
     @Override
     public StudyChatRoom save(StudyChatRoom studyChatRoom) {
         return studyChatRoomJpaRepository.save(studyChatRoom);
+    }
+
+    @Override
+    public List<StudyChatRoom> findAllByUserId(Long userId) {
+        return studyChatRoomJpaRepository.findAllByUserId(userId);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Locale;
 @Getter
 public enum StudyChatMessageErrorCode implements ErrorCode {
     DESERIALIZATION_FAILED(HttpStatus.BAD_REQUEST, "study-chat-message.deserialization-failed"),
-    ;
+    NOT_FOUND(HttpStatus.NOT_FOUND, "study-chat-message.not-found"),;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

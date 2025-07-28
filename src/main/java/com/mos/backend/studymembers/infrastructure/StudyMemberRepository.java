@@ -26,4 +26,6 @@ public interface StudyMemberRepository {
     boolean existsByStudyAndRoleType(Study study, StudyMemberRoleType roleType);
 
     boolean existsByUserAndStudy(User user, Study study);
+
+    List<StudyMember> findAllByUserNotAndStudy(User user, Study study);
 }

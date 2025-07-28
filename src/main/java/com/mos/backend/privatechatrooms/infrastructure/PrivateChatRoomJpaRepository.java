@@ -11,15 +11,18 @@ import java.util.Optional;
 
 public interface PrivateChatRoomJpaRepository extends JpaRepository<PrivateChatRoom, Long> {
     @Query("""
-            SELECT p.id FROM PrivateChatRoom p 
-            WHERE (p.requester = :user1 AND p.receiver = :user2) 
-               OR (p.requester = :user2 AND p.receiver = :user1)
+                select m.privateChatRoom.id
+                from PrivateChatRoomMember m
+                where m.user in (:user1, :user2)
+                group by m.privateChatRoom.id
+                having count(distinct m.user) = 2
             """)
     Optional<Long> findPrivateChatRoomIdByUsers(@Param("user1") User user1, @Param("user2") User user2);
 
     @Query("""
-            SELECT p FROM PrivateChatRoom p
-            WHERE p.requester = :user OR p.receiver = :user
+                select m.privateChatRoom
+                from PrivateChatRoomMember m
+                where m.user = :user
             """)
-    List<PrivateChatRoom> findByRequesterOrReceiver(User user);
+    List<PrivateChatRoom> findByUser(@Param("user") User user);
 }

@@ -5,6 +5,7 @@ import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +21,17 @@ public class PrivateChatMessageRepositoryImpl implements PrivateChatMessageRepos
     }
 
     @Override
-    public Optional<PrivateChatMessage> findFirstByPrivateChatRoomOrderByCreatedByDesc(PrivateChatRoom privateChatRoom) {
-        return privateChatMessageJpaRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
+    public Optional<PrivateChatMessage> findFirstByPrivateChatRoomOrderByCreatedAtDesc(PrivateChatRoom privateChatRoom) {
+        return privateChatMessageJpaRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
     }
 
     @Override
     public List<PrivateChatMessage> findAllByChatRoomIdForInfiniteScroll(Long privateChatRoomId, Long lastPrivateChatMessageId, int size) {
         return privateChatMessageQueryDslRepository.findByChatRoomIdForInfiniteScroll(privateChatRoomId, lastPrivateChatMessageId, size);
+    }
+
+    @Override
+    public int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryAt) {
+        return privateChatMessageJpaRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoomId, lastEntryAt);
     }
 }

@@ -8,10 +8,14 @@ import com.mos.backend.common.utils.InfinityScrollUtil;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
+import com.mos.backend.studychatmessages.entity.exception.StudyChatMessageErrorCode;
 import com.mos.backend.studychatmessages.infrastructure.StudyChatMessageRepository;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
+import com.mos.backend.studychatrooms.application.dto.StudyChatRoomInfoMessageDto;
 import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
+import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +32,7 @@ import java.util.Optional;
 public class StudyChatMessageService {
     private final StudyMemberRepository studyMemberRepository;
     private final StudyChatMessageRepository studyChatMessageRepository;
+    private final StudyMemberService studyMemberService;
     private final RedisPublisher redisPublisher;
     private final EntityFacade entityFacade;
 
@@ -42,6 +48,15 @@ public class StudyChatMessageService {
 
         StudyChatMessageDto studyChatMessageDto = StudyChatMessageDto.of(studyChatMessage, user.getId());
         redisPublisher.publishStudyChatMessage(studyChatMessageDto);
+
+        List<StudyMember> studyMembers = studyMemberService.findAllByUserNotAndStudy(user, studyChatRoom.getStudy());
+        studyMembers.forEach(studyMember -> {
+            StudyChatRoomInfoMessageDto studyChatRoomInfoMessageDto = StudyChatRoomInfoMessageDto.of(
+                    studyMember.getUser().getId(), studyChatRoom.getId(), studyChatMessage.getMessage(), studyChatMessage.getCreatedAt()
+            );
+            redisPublisher.publishStudyChatRoomInfoMessage(studyChatRoomInfoMessageDto);
+        });
+
     }
 
     private StudyChatMessage saveStudyChatMessage(StudyChatMessagePublishReq req, User user, StudyChatRoom studyChatRoom) {
@@ -70,5 +85,21 @@ public class StudyChatMessageService {
                 .toList();
 
         return InfinityScrollRes.of(studyChatMessageResList, lastElementId, hasNext);
+    }
+
+    @Transactional(readOnly = true)
+    public int getUnreadCnt(Long userId, Long studyChatRoomId) {
+        User user = entityFacade.getUser(userId);
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
+
+        StudyMember studyMember = studyMemberService.findByStudyAndUser(studyChatRoom.getStudy(), user);
+        LocalDateTime lastEntryAt = studyMember.getLastEntryAt();
+
+        return studyChatMessageRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoom.getId(), lastEntryAt);
+    }
+
+    public StudyChatMessage getLastMessage(StudyChatRoom studyChatRoom) {
+        return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom)
+                .orElseThrow(() -> new MosException(StudyChatMessageErrorCode.NOT_FOUND));
     }
 }

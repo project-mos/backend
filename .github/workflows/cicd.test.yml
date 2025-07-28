@@ -49,6 +49,8 @@ jobs:
           echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> .env
           echo "REDIS_PRIVATE_CHAT_CHANNEL=${{secrets.REDIS_PRIVATE_CHAT_CHANNEL}}" >> .env
           echo "REDIS_STUDY_CHAT_CHANNEL=${{secrets.REDIS_PRIVATE_CHAT_CHANNEL}}" >> .env
+          echo "REDIS_PRIVATE_CHAT_ROOM_INFO_CHANNEL=${{secrets.REDIS_PRIVATE_CHAT_ROOM_INFO_CHANNEL}}" >> .env
+          echo "REDIS_STUDY_CHAT_ROOM_INFO_CHANNEL=${{secrets.REDIS_STUDY_CHAT_ROOM_INFO_CHANNEL}}" >> .env
           
           echo "AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY_ID}}" >> .env
           echo "AWS_SECRET_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> .env

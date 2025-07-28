@@ -7,6 +7,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
+import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studymembers.application.res.StudyMemberRes;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
@@ -122,5 +123,17 @@ public class StudyMemberService {
         Study study = entityFacade.getStudy(studyId);
         List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
         return studyMemberRepository.countByStudyAndStatusIn(study, currentParticipationStatusList);
+    }
+
+    @Transactional
+    public void updateLastEntryAt(Long userId, Long studyChatRoomId) {
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
+        StudyMember studyMember = entityFacade.getStudyMember(userId, studyChatRoom.getStudy().getId());
+
+        studyMember.updateLastEntryAt();
+    }
+
+    public List<StudyMember> findAllByUserNotAndStudy(User user, Study study) {
+        return studyMemberRepository.findAllByUserNotAndStudy(user, study);
     }
 }

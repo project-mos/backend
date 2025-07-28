@@ -56,4 +56,9 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     public boolean existsByUserAndStudy(User user, Study study) {
         return studyMemberJpaRepository.existsByUserAndStudy(user, study);
     }
+
+    @Override
+    public List<StudyMember> findAllByUserNotAndStudy(User user, Study study) {
+        return studyMemberJpaRepository.findAllByUserNotAndStudy(user, study);
+    }
 }

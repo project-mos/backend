@@ -45,6 +45,9 @@ import com.mos.backend.users.infrastructure.respository.UserRepository;
 import com.mos.backend.userschedules.entity.UserSchedule;
 import com.mos.backend.userschedules.entity.UserScheduleErrorCode;
 import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
+import com.mos.backend.userstudysettings.entity.UserStudySetting;
+import com.mos.backend.userstudysettings.entity.UserStudySettingErrorCode;
+import com.mos.backend.userstudysettings.infrastructure.UserStudySettingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +71,7 @@ public class EntityFacade {
     private final PrivateChatRoomRepository privateChatRoomRepository;
     private final PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     private final StudyChatRoomRepository studyChatRoomRepository;
+    private final UserStudySettingRepository userStudySettingRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -140,6 +144,11 @@ public class EntityFacade {
     public StudyChatRoom getStudyChatRoom(Long studyChatRoomId) {
         return studyChatRoomRepository.findById(studyChatRoomId)
                 .orElseThrow(() -> new MosException(StudyChatRoomErrorCode.NOT_FOUND));
+    }
+
+    public UserStudySetting getUserStudySetting(Long userId, Long studyId) {
+        return userStudySettingRepository.findByStudyMember(this.getStudyMember(userId, studyId))
+                .orElseThrow(() -> new MosException(UserStudySettingErrorCode.NOT_FOUND));
     }
 
     public PrivateChatRoomMember getPrivateChatRoomMember(Long userId, Long privateChatRoomId) {

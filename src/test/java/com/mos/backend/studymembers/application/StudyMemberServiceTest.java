@@ -13,8 +13,8 @@ import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
+import com.mos.backend.userstudysettings.application.UserStudySettingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,6 +47,8 @@ class StudyMemberServiceTest {
     private AttendanceRepository attendanceRepository;
     @Mock
     private EntityFacade entityFacade;
+    @Mock
+    private UserStudySettingService userStudySettingService;
     @InjectMocks
     private StudyMemberService studyMemberService;
 

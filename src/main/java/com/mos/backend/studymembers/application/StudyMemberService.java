@@ -15,6 +15,7 @@ import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.userstudysettings.application.UserStudySettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StudyMemberService {
     private final AttendanceService attendanceService;
+    private final UserStudySettingService userStudySettingService;
     private final StudyMemberRepository studyMemberRepository;
     private final AttendanceRepository attendanceRepository;
     private final EntityFacade entityFacade;
@@ -44,6 +46,7 @@ public class StudyMemberService {
             throw new MosException(StudyMemberErrorCode.STUDY_LEADER_ALREADY_EXIST);
 
         studyMemberRepository.save(StudyMember.createStudyLeader(study, user));
+        userStudySettingService.create(studyId, userId);
     }
 
     @Transactional
@@ -63,6 +66,7 @@ public class StudyMemberService {
             throw new MosException(StudyMemberErrorCode.CONFLICT);
 
         studyMemberRepository.save(StudyMember.createStudyMember(study, user));
+        userStudySettingService.create(studyId, userId);
     }
 
     @Transactional(readOnly = true)

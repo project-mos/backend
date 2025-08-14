@@ -44,7 +44,7 @@ public class PrivateChatMessageService {
         PrivateChatMessage privateChatMessage = savePrivateChatMessage(user, privateChatRoom, req.getMessage());
         redisPublisher.publishPrivateChatMessage(
                 PrivateChatMessageDto.of(
-                        user.getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+                        user.getId(), user.getNickname(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
                 )
         );
 

@@ -2,6 +2,7 @@ package com.mos.backend.studyjoins.presentation.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
+import com.mos.backend.common.test.config.TestWebSocketConfig;
 import com.mos.backend.securityuser.WithMockCustomUser;
 import com.mos.backend.studyjoins.application.StudyJoinService;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +24,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(TestWebSocketConfig.class)
 @WebMvcTest(StudyJoinController.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 @AutoConfigureMockMvc(addFilters = false)

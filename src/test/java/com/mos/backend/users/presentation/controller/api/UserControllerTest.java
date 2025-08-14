@@ -3,6 +3,7 @@ package com.mos.backend.users.presentation.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.jwt.TokenUtil;
+import com.mos.backend.common.test.config.TestWebSocketConfig;
 import com.mos.backend.securityuser.WithMockCustomUser;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Category;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -32,6 +34,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(TestWebSocketConfig.class)
 @WebMvcTest(UserController.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 @AutoConfigureMockMvc(addFilters = false)

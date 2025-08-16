@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudyChatMessageController {
     private final StudyChatMessageService studyChatMessageService;
 
-    @MessageMapping("/studies/{studyId}/messages")
+    @MessageMapping("/studies/chat-rooms/{studyChatRoomId}/messages")
     public void publishPrivateChatMessage(Message<?> message,
-                                          @DestinationVariable Long studyId,
+                                          @DestinationVariable Long studyChatRoomId,
                                           @Validated StudyChatMessagePublishReq studyChatMessagePublishReq) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         Long userId = StompPrincipalUtil.getUserId(accessor);
-        studyChatMessageService.publish(userId, studyId, studyChatMessagePublishReq);
+        studyChatMessageService.publish(userId, studyChatRoomId, studyChatMessagePublishReq);
     }
 
     @GetMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}/messages")

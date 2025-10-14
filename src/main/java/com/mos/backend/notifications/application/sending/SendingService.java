@@ -1,8 +1,10 @@
 package com.mos.backend.notifications.application.sending;
 
-import com.mos.backend.notifications.application.dto.DataPayloadDto;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
+
+import java.util.List;
 
 public interface SendingService {
 
-    void sendMessage(Long userId, String title, String content, DataPayloadDto dataPayloadDto);
+    void sendMulticastMessage(List<Long> recipientIds, String title, String content, DataPayload dataPayload);
 }

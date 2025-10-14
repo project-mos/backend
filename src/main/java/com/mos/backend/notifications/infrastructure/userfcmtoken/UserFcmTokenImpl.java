@@ -27,4 +27,9 @@ public class UserFcmTokenImpl implements UserFcmTokenRepository{
     public List<UserFcmToken> findByUserId(Long userId) {
         return userFcmTokenJpaRepository.findByUserId(userId);
     }
+
+    @Override
+    public List<UserFcmToken> findByUserIdsWithUser(List<Long> userIds) {
+        return userFcmTokenJpaRepository.findByUserIdsWithUser(userIds);
+    }
 }

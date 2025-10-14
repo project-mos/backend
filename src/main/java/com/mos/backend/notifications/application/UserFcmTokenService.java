@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,24 @@ public class UserFcmTokenService {
     @Transactional(readOnly = true)
     public List<UserFcmToken> findByUserId(Long userId) {
         return userFcmTokenRepository.findByUserId(userId);
+    }
+
+    /**
+     * 여러 사용자 ID에 해당하는 모든 FCM 토큰을 조회하여 "토큰-유저ID" 맵으로 반환
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Long> findTokensByUserIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<UserFcmToken> tokens = userFcmTokenRepository.findByUserIdsWithUser(userIds);
+
+        return tokens.stream()
+                .collect(Collectors.toMap(
+                        UserFcmToken::getToken,
+                        token -> token.getUser().getId(),
+                        (existing, replacement) -> existing
+                ));
     }
 }

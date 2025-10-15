@@ -33,12 +33,10 @@ public class StudyFileUploadFailedEventHandler implements NotificationEventHandl
 
         // 알림 제목, 내용 생성
         String title = ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault());
-        String content = ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{payload.getOriginalFilename()}, Locale.getDefault());
+        String content = ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{study.getTitle(), payload.getOriginalFilename()}, Locale.getDefault());
 
         StudyFileUploadPayload dataPayload = StudyFileUploadPayload.failure(
-                payload.getStudyId(),
-                study.getTitle(),
-                payload.getOriginalFilename()
+                payload.getStudyId()
         );
 
         return NotificationDetails.builder()

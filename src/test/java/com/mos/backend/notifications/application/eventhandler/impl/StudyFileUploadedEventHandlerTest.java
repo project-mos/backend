@@ -82,8 +82,6 @@ class StudyFileUploadedEventHandlerTest {
         // 자식 타입으로 캐스팅하여 내부 필드 검증
         StudyFileUploadPayload fileUploadPayload = (StudyFileUploadPayload) payload;
         assertThat(fileUploadPayload.getStudyId()).isEqualTo(studyId);
-        assertThat(fileUploadPayload.getStudyName()).isEqualTo(studyTitle);
-        assertThat(fileUploadPayload.getFileName()).isEqualTo(fileName);
         assertThat(fileUploadPayload.getStatus()).isEqualTo(FileUploadStatus.SUCCESS); // '성공' 상태인지 확인
     }
 }

@@ -81,8 +81,6 @@ class StudyFileUploadFailedEventHandlerTest {
 
         StudyFileUploadPayload fileUploadPayload = (StudyFileUploadPayload) payload;
         assertThat(fileUploadPayload.getStudyId()).isEqualTo(studyId);
-        assertThat(fileUploadPayload.getStudyName()).isEqualTo(studyTitle);
-        assertThat(fileUploadPayload.getFileName()).isEqualTo(fileName);
         assertThat(fileUploadPayload.getStatus()).isEqualTo(FileUploadStatus.FAILURE);
     }
 }

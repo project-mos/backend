@@ -2,8 +2,11 @@ package com.mos.backend.notifications.entity;
 
 import com.mos.backend.common.entity.BaseTimeEntity;
 import com.mos.backend.common.event.EventType;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
+import com.mos.backend.notifications.infrastructure.persistence.DataPayloadConverter;
 import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -42,13 +45,17 @@ public class NotificationLog extends BaseTimeEntity {
     @Column(nullable = false, name = "is_read")
     private boolean isRead = false;
 
-    public static NotificationLog create(User recipient, EventType type,String title, String content) {
-        NotificationLog notificationLog = new NotificationLog();
-        notificationLog.recipient = recipient;
-        notificationLog.type = type;
-        notificationLog.title = title;
-        notificationLog.content = content;
-        return notificationLog;
+    @Convert(converter = DataPayloadConverter.class)
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private DataPayload payload;
+
+    @Builder
+    public NotificationLog (User recipient, EventType type,String title, String content, DataPayload payload) {
+        this.recipient = recipient;
+        this.type = type;
+        this.title = title;
+        this.content = content;
+        this.payload = payload;
     }
 
     public void read() {

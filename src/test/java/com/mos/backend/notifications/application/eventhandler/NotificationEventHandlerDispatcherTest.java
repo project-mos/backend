@@ -3,7 +3,6 @@ package com.mos.backend.notifications.application.eventhandler;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.notifications.application.eventhandler.impl.StudyFileUploadFailedEventHandler;
 import com.mos.backend.notifications.application.eventhandler.impl.StudyFileUploadedEventHandler;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,8 +23,6 @@ class NotificationEventHandlerDispatcherTest {
 
     @Mock
     private StudyFileUploadFailedEventHandler studyFileUploadFailedEventHandler;
-
-    private NotificationEventHandlerDispatcher dispatcher;
 
     @Test
     @DisplayName("지원하는 Type의 handler가 존재하면 handler를 반환한다.")
@@ -52,9 +49,10 @@ class NotificationEventHandlerDispatcherTest {
         NotificationEventHandlerDispatcher dispatcher = new NotificationEventHandlerDispatcher(List.of(studyFileUploadedEventHandler, studyFileUploadFailedEventHandler));
 
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> dispatcher.findNotificationHandler(EventType.STUDY_CREATED));
+        EventType unsupportedEventType = EventType.STUDY_CREATED;
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> dispatcher.findNotificationHandler(unsupportedEventType));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("cannot find proper handler");
+        assertThat(exception.getMessage()).isEqualTo("Cannot find a proper handler for " + unsupportedEventType);
     }
 }

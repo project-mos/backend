@@ -2,11 +2,12 @@ package com.mos.backend.notifications.application.eventhandler.impl;
 
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.infrastructure.EntityFacade;
-import com.mos.backend.notifications.application.dto.DataPayloadDto;
 import com.mos.backend.notifications.application.dto.NotificationDetails;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
+import com.mos.backend.notifications.application.dto.payload.StudyFileUploadPayload;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayloadWithNotification;
-import com.mos.backend.studymaterials.application.event.FileUploadedEventPayloadWithNotification;
+import com.mos.backend.studymaterials.entity.FileUploadStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,68 +16,73 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
-import java.util.List;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StudyFileUploadFailedEventHandlerTest {
 
-    private static final String MESSAGE_TITLE_CODE = "notification.file-upload-failed.title";
-    private static final String MESSAGE_CONTENT_CODE = "notification.file-upload-failed.content";
+    private static final String MESSAGE_TITLE_CODE = "notification.file-upload-failure.title";
+    private static final String MESSAGE_CONTENT_CODE = "notification.file-upload-failure.content";
 
     @Mock
     private EntityFacade entityFacade;
+
     @Mock
-    private MessageSource ms;
+    private MessageSource messageSource;
+
     @InjectMocks
     private StudyFileUploadFailedEventHandler studyFileUploadFailedEventHandler;
 
     @Test
-    @DisplayName("support 메서드 호출 시 EventType.FILE_UPLOAD_FAILED를 반환한다.")
-    void whenSupportMethod_ThenReturnEventTypeFILE_UPLOAD_FAILED() {
-        // when - then
+    @DisplayName("support 메서드는 EventType.FILE_UPLOAD_FAILED를 반환해야 한다.")
+    void support_ShouldReturn_EventTypeFileUploadFailed() {
+        // when & then
         assertThat(studyFileUploadFailedEventHandler.support()).isEqualTo(EventType.FILE_UPLOAD_FAILED);
     }
 
     @Test
-    @DisplayName("prepareDetails 메서드 호출 시 NotificationDetailsList를 반환한다.")
-    void whenPrepareDetails_ThenReturnListOfNotificationDetails() {
+    @DisplayName("prepareDetails 메서드는 올바른 '실패' 상태의 NotificationDetails 객체를 생성하여 반환해야 한다.")
+    void prepareDetails_ShouldReturn_CorrectFailureNotificationDetails() {
 
-        // given
-        EventType type = EventType.FILE_UPLOAD_FAILED;
+        // given: 테스트에 필요한 모든 데이터를 설정
+        EventType eventType = EventType.FILE_UPLOAD_FAILED;
         Long uploaderId = 1L;
-        Long studyId = 1L;
-        String originalFilename = "testFile";
-        String filePath = "testPath";
-        FileUploadFailedEventPayloadWithNotification payload = new FileUploadFailedEventPayloadWithNotification(uploaderId, studyId, filePath, originalFilename);
+        Long studyId = 10L;
+        String fileName = "failedFile.zip";
+        String filePath = "path/to/file";
+        var eventPayload = new FileUploadFailedEventPayloadWithNotification(uploaderId, studyId, filePath, fileName);
 
         Study mockStudy = mock(Study.class);
-        String studyTitle = "testStudyTitle";
+        String studyTitle = "리액트 스터디";
         when(mockStudy.getTitle()).thenReturn(studyTitle);
         when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
 
-        String messageTitle = "testMessageTitle";
-        String messageContent = "testMessageContent";
-        when(ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault())).thenReturn("testMessageTitle");
-        when(ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{payload.getOriginalFilename()}, Locale.getDefault())).thenReturn("testMessageContent");
+        String expectedTitle = "파일 업로드 실패";
+        String expectedContent = "failedFile.zip 파일 업로드를 실패했습니다.";
+        when(messageSource.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault())).thenReturn(expectedTitle);
+        when(messageSource.getMessage(MESSAGE_CONTENT_CODE, new Object[]{fileName}, Locale.getDefault())).thenReturn(expectedContent);
 
         // when
-        List<NotificationDetails> notificationDetails = studyFileUploadFailedEventHandler.prepareDetails(type, payload);
+        NotificationDetails details = studyFileUploadFailedEventHandler.prepareDetails(eventType, eventPayload);
 
         // then
-        assertThat(notificationDetails).hasSize(1);
-        assertThat(notificationDetails.getFirst().getTitle()).isEqualTo(messageTitle);
-        assertThat(notificationDetails.getFirst().getContent()).isEqualTo(messageContent);
-        assertThat(notificationDetails.getFirst().getRecipientId()).isEqualTo(uploaderId.toString());
-        DataPayloadDto dataPayloadDto = notificationDetails.getFirst().getDataPayloadDto();
-        assertThat(dataPayloadDto.getType()).isEqualTo(EventType.FILE_UPLOAD_FAILED.toString());
-        assertThat(dataPayloadDto.getStudyId()).isEqualTo(studyId.toString());
-        assertThat(dataPayloadDto.getFileName()).isEqualTo(originalFilename);
-        assertThat(dataPayloadDto.getStudyName()).isEqualTo(studyTitle);
+        assertThat(details).isNotNull();
+        assertThat(details.getRecipientIds()).hasSize(1).containsExactly(uploaderId);
+        assertThat(details.getEventType()).isEqualTo(eventType);
+        assertThat(details.getTitle()).isEqualTo(expectedTitle);
+        assertThat(details.getContent()).isEqualTo(expectedContent);
+
+        DataPayload payload = details.getDataPayload();
+        assertThat(payload).isInstanceOf(StudyFileUploadPayload.class);
+
+        StudyFileUploadPayload fileUploadPayload = (StudyFileUploadPayload) payload;
+        assertThat(fileUploadPayload.getStudyId()).isEqualTo(studyId);
+        assertThat(fileUploadPayload.getStudyName()).isEqualTo(studyTitle);
+        assertThat(fileUploadPayload.getFileName()).isEqualTo(fileName);
+        assertThat(fileUploadPayload.getStatus()).isEqualTo(FileUploadStatus.FAILURE);
     }
 }

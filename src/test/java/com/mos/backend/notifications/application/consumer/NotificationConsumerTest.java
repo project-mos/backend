@@ -4,8 +4,9 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.event.NotificationPayload;
 import com.mos.backend.notifications.application.NotificationLogService;
-import com.mos.backend.notifications.application.dto.DataPayloadDto;
 import com.mos.backend.notifications.application.dto.NotificationDetails;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
+import com.mos.backend.notifications.application.dto.payload.StudyFileUploadPayload;
 import com.mos.backend.notifications.application.eventhandler.NotificationEventHandler;
 import com.mos.backend.notifications.application.eventhandler.NotificationEventHandlerDispatcher;
 import com.mos.backend.notifications.application.sending.SendingService;
@@ -15,15 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationConsumerTest {
@@ -34,58 +33,87 @@ class NotificationConsumerTest {
     private NotificationLogService notificationLogService;
     @Mock
     private SendingService sendingService;
+
     @Mock
-    private NotificationEventHandler<FileUploadedEventPayloadWithNotification> mockHandler;
+    private NotificationEventHandler<?> mockHandler;
 
     @InjectMocks
     private NotificationConsumer notificationConsumer;
 
-    private EventType type = EventType.FILE_UPLOADED;
-    private Long userId = 1L;
-    private Long studyId = 1L;
-    private String originalFilename = "testFileName";
-    private String studyName = "testStudyName";
-
 
     @Test
-    @DisplayName("NotificationDetails 리스트의 크기가 1개 이상일 때 리스트의 크기 만큼 service를 호출한다.")
-    void whenNotificationDetailsSizeOverThan1_ThenRequestServiceMethodSizeEqualsListSize() {
-
+    @DisplayName("이벤트 수신 시, 핸들러를 통해 Details를 생성하고 각 서비스를 한 번씩만 호출해야 한다.")
+    void handleNotificationEvent_Success() {
         // given
-        FileUploadedEventPayloadWithNotification fileUploadedEventPayloadWithNotification = new FileUploadedEventPayloadWithNotification(userId, studyId, originalFilename);
-        Event<FileUploadedEventPayloadWithNotification> event = Event.create(type, fileUploadedEventPayloadWithNotification);
+        EventType eventType = EventType.FILE_UPLOADED;
+        FileUploadedEventPayloadWithNotification payload = new FileUploadedEventPayloadWithNotification(1L, 10L, "test.pdf");
+        Event<FileUploadedEventPayloadWithNotification> event = Event.create(eventType, payload);
 
-        when(dispatcher.findNotificationHandler(event.getEventType())).thenReturn(mockHandler);
+        when(dispatcher.findNotificationHandler(eventType)).thenReturn(mockHandler);
 
-        DataPayloadDto dataPayloadDto = DataPayloadDto.forFileUpload(type, studyId, studyName, originalFilename);
-        NotificationDetails notificationDetails1 = NotificationDetails.forFileUploaded(userId, "title", "content", dataPayloadDto);
-        NotificationDetails notificationDetails2 = NotificationDetails.forFileUploaded(userId, "title", "content", dataPayloadDto);
+        DataPayload dataPayload = StudyFileUploadPayload.success(10L, "스터디", "test.pdf");
+        NotificationDetails details = NotificationDetails.builder()
+                .recipientIds(List.of(1L, 2L, 3L))
+                .eventType(eventType)
+                .title("제목")
+                .content("내용")
+                .dataPayload(dataPayload)
+                .build();
 
-        List<NotificationDetails> notificationDetailsList = List.of(notificationDetails1, notificationDetails2);
-
-        when(mockHandler.prepareDetails(event.getEventType(), event.getPayload())).thenReturn(notificationDetailsList);
+        when(((NotificationEventHandler<FileUploadedEventPayloadWithNotification>) mockHandler).prepareDetails(eventType, payload))
+                .thenReturn(details);
 
         // when
         notificationConsumer.handleNotificationEvent(event);
 
         // then
-        verify(notificationLogService, times(notificationDetailsList.size())).create(anyLong(), any(EventType.class), anyString(), anyString());
-        verify(sendingService, times(notificationDetailsList.size())).sendMessage(anyLong(), anyString(), anyString(), any(DataPayloadDto.class));
+        verify(sendingService, times(1)).sendMulticastMessage(
+                details.getRecipientIds(),
+                details.getTitle(),
+                details.getContent(),
+                details.getDataPayload()
+        );
+        verify(notificationLogService, times(1)).saveAll(details);
     }
 
     @Test
-    @DisplayName("Dispatcher가 핸들러를 찾지 못하면 Log/Send 서비스는 호출되지 않는다")
-    void handleNotificationEvent_NoHandlerFound() {
+    @DisplayName("핸들러가 반환한 수신자 목록이 비어있으면, 어떤 서비스도 호출하지 않아야 한다.")
+    void handleNotificationEvent_WhenNoRecipients_ShouldDoNothing() {
         // given
-        Event<NotificationPayload> event = Event.create(type, mock(NotificationPayload.class));
-        when(dispatcher.findNotificationHandler(event.getEventType())).thenThrow(new IllegalArgumentException("cannot find proper handler"));
+        EventType eventType = EventType.FILE_UPLOADED;
+        Event<NotificationPayload> event = Event.create(eventType, mock(NotificationPayload.class));
+        when(dispatcher.findNotificationHandler(eventType)).thenReturn(mockHandler);
+
+        // 수신자 목록이 비어있는 NotificationDetails를 생성
+        NotificationDetails detailsWithNoRecipients = NotificationDetails.builder()
+                .recipientIds(Collections.emptyList())
+                .build();
+        when(mockHandler.prepareDetails(any(), any())).thenReturn(detailsWithNoRecipients);
 
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> notificationConsumer.handleNotificationEvent(event));
+        notificationConsumer.handleNotificationEvent(event);
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("cannot find proper handler");
-        verify(notificationLogService, never()).create(anyLong(), any(EventType.class), anyString(), anyString());
-        verify(sendingService, never()).sendMessage(anyLong(), anyString(), anyString(), any(DataPayloadDto.class));
+        // 어떤 서비스도 호출되지 않았는지 검증
+        verify(sendingService, never()).sendMulticastMessage(any(), any(), any(), any());
+        verify(notificationLogService, never()).saveAll(any());
+    }
+
+    @Test
+    @DisplayName("Dispatcher가 핸들러를 찾지 못하고 예외를 던져도, Consumer는 중단되지 않고 서비스들을 호출하지 않아야 한다.")
+    void handleNotificationEvent_WhenNoHandlerFound_ShouldNotCallServices() {
+        // given
+        EventType eventType = EventType.FILE_UPLOADED;
+        Event<NotificationPayload> event = Event.create(eventType, mock(NotificationPayload.class));
+
+        // Dispatcher가 예외를 던지도록 설정
+        when(dispatcher.findNotificationHandler(eventType)).thenThrow(new IllegalArgumentException("Test Exception"));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            notificationConsumer.handleNotificationEvent(event);
+        });
+
+        verify(sendingService, never()).sendMulticastMessage(any(), any(), any(), any());
+        verify(notificationLogService, never()).saveAll(any());
     }
 }

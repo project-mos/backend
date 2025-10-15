@@ -4,10 +4,12 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.application.event.StudyJoinCreatedEventPayload;
+import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
@@ -60,7 +62,7 @@ public class StudyJoinService {
         if (studyJoinReqs != null && studyJoinReqs.size() > 0) {
             saveQuestionAnswers(studyJoinReqs, study, newStudyJoin);
         }
-//        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId, newStudyJoin.getId(), study.getTitle())));
     }
 
     private void saveQuestionAnswers(List<StudyJoinReq> studyJoinReqs, Study study, StudyJoin newStudyJoin) {
@@ -146,7 +148,7 @@ public class StudyJoinService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isApplicantOrAdmin(#studyJoinId)")
-    public void cancelStudyJoin(Long studyId, Long studyJoinId) {
+    public void cancelStudyJoin(Long studyId, Long studyJoinId, Long userId) {
         Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
@@ -154,7 +156,7 @@ public class StudyJoinService {
         validatePendingStatus(studyJoin);
 
         studyJoin.cancel();
-//        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN_CANCEL, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN_CANCEL, studyId, studyJoinId, study.getTitle())));
     }
 
     @Transactional(readOnly = true)

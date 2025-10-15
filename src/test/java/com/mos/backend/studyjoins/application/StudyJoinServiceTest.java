@@ -432,6 +432,7 @@ public class StudyJoinServiceTest {
             // Given
             Long studyId = 1L;
             Long studyJoinId = 1L;
+            Long userId = 1L;
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
@@ -441,7 +442,7 @@ public class StudyJoinServiceTest {
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
-            studyJoinService.cancelStudyJoin(studyId, studyJoinId);
+            studyJoinService.cancelStudyJoin(studyId, studyJoinId, userId);
 
             // Then
             verify(entityFacade).getStudy(studyId);
@@ -460,6 +461,7 @@ public class StudyJoinServiceTest {
             // Given
             Long studyId = 1L;
             Long studyJoinId = 1L;
+            Long userId = 1L;
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
@@ -469,7 +471,7 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.cancelStudyJoin(studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(studyId, studyJoinId, userId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
@@ -486,6 +488,7 @@ public class StudyJoinServiceTest {
             // Given
             Long studyId = 1L;
             Long studyJoinId = 1L;
+            Long userId = 1L;
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
@@ -496,7 +499,7 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.cancelStudyJoin(studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(studyId, studyJoinId, userId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_NOT_PENDING, exception.getErrorCode());

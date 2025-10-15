@@ -22,8 +22,8 @@ public class NotificationEventHandlerDispatcher {
 
     public NotificationEventHandler findNotificationHandler(EventType eventType) {
         if (!support(eventType)) {
-            log.error("적절한 핸들러 반환 실패");
-            throw new IllegalArgumentException("cannot find proper handler");
+            log.error("Cannot find a proper handler for eventType: {}", eventType);
+            throw new IllegalArgumentException("Cannot find a proper handler for " + eventType);
         } return notificationHandlerMap.get(eventType);
     }
 

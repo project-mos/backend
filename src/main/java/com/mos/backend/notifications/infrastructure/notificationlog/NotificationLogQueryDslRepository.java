@@ -1,11 +1,9 @@
 package com.mos.backend.notifications.infrastructure.notificationlog;
 
 import com.mos.backend.common.utils.QueryDslSortUtil;
-import com.mos.backend.notifications.application.dto.NotificationResponseDto;
 import com.mos.backend.notifications.entity.NotificationLog;
 import com.mos.backend.notifications.entity.NotificationReadStatus;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,18 +22,9 @@ import static com.mos.backend.notifications.entity.QNotificationLog.notification
 public class NotificationLogQueryDslRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<NotificationResponseDto> getNotificationLogs(Pageable pageable, Long userId, NotificationReadStatus readStatus) {
-        List<NotificationResponseDto> content = queryFactory
-                .select(Projections.constructor(NotificationResponseDto.class,
-                                notificationLog.id,
-                                notificationLog.recipient.id,
-                                notificationLog.type,
-                                notificationLog.title,
-                                notificationLog.content,
-                                notificationLog.isRead,
-                                notificationLog.createdAt
-                ))
-                .from(notificationLog)
+    public Page<NotificationLog> getNotificationLogs(Pageable pageable, Long userId, NotificationReadStatus readStatus) {
+        List<NotificationLog> content = queryFactory
+                .selectFrom(notificationLog)
                 .where(
                         notificationLog.recipient.id.eq(userId),
                         readStatusEq(readStatus)

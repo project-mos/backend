@@ -2,12 +2,15 @@ package com.mos.backend.notifications.application;
 
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.notifications.application.dto.NotificationDetails;
 import com.mos.backend.notifications.application.dto.NotificationListResponseDto;
 import com.mos.backend.notifications.application.dto.NotificationResponseDto;
 import com.mos.backend.notifications.application.dto.NotificationUnreadCountDto;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
 import com.mos.backend.notifications.entity.NotificationLog;
 import com.mos.backend.notifications.entity.NotificationReadStatus;
 import com.mos.backend.notifications.infrastructure.notificationlog.NotificationLogRepository;
+import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,8 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,37 @@ public class NotificationLogService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void  create (Long recipientId, EventType eventType, String title, String content) {
-        notificationLogRepository.save(NotificationLog.create(entityFacade.getUser(recipientId), eventType, title, content));
+    public void  create (Long recipientId, EventType eventType, String title, String content, DataPayload payload) {
+        notificationLogRepository.save(
+                NotificationLog.builder()
+                        .recipient(entityFacade.getUser(recipientId))
+                        .type(eventType)
+                        .title(title)
+                        .content(content)
+                        .payload(payload)
+                        .build()
+        );
+    }
+
+    /**
+     * 여러 수신자에 대한 알림 로그를 한 번에 저장
+     * @param details 상세 정보 묶음
+     */
+    @Transactional
+    public void saveAll(NotificationDetails details) {
+        List<NotificationLog> logs = details.getRecipientIds().stream()
+                .map(recipientId -> {
+                    User recipient = entityFacade.getUser(recipientId);
+                    return NotificationLog.builder()
+                            .recipient(recipient)
+                            .type(details.getEventType())
+                            .title(details.getTitle())
+                            .content(details.getContent())
+                            .payload(details.getDataPayload())
+                            .build();
+                })
+                .toList();
+        notificationLogRepository.saveAll(logs);
     }
 
     /**
@@ -65,12 +99,13 @@ public class NotificationLogService {
             Long userId,
             NotificationReadStatus status
     ) {
-        Page<NotificationResponseDto> notifications = notificationLogRepository.getNotifications(pageable, userId, status);
+        Page<NotificationLog> notifications = notificationLogRepository.getNotifications(pageable, userId, status);
+        Page<NotificationResponseDto> dtos = notifications.map(NotificationResponseDto::new);
         return new NotificationListResponseDto(
                 notifications.getTotalElements(),
                 notifications.getNumber(),
                 notifications.getTotalPages(),
-                notifications.getContent()
+                dtos.getContent()
         );
     }
 }

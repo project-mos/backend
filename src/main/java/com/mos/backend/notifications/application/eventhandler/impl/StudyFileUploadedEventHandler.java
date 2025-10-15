@@ -2,9 +2,9 @@ package com.mos.backend.notifications.application.eventhandler.impl;
 
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.infrastructure.EntityFacade;
-import com.mos.backend.notifications.application.eventhandler.NotificationEventHandler;
-import com.mos.backend.notifications.application.dto.DataPayloadDto;
 import com.mos.backend.notifications.application.dto.NotificationDetails;
+import com.mos.backend.notifications.application.dto.payload.StudyFileUploadPayload;
+import com.mos.backend.notifications.application.eventhandler.NotificationEventHandler;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymaterials.application.event.FileUploadedEventPayloadWithNotification;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +25,29 @@ public class StudyFileUploadedEventHandler implements NotificationEventHandler<F
     private final MessageSource ms;
 
     @Override
-    public List<NotificationDetails> prepareDetails(EventType type, FileUploadedEventPayloadWithNotification payload) {
-        List<Long> recipientIdList = getRecipientIdList(payload);
+    public NotificationDetails prepareDetails(EventType type, FileUploadedEventPayloadWithNotification payload) {
         Study study = entityFacade.getStudy(payload.getStudyId());
-        DataPayloadDto dataPayloadDto = DataPayloadDto.forFileUpload(type, payload.getStudyId(), study.getTitle(), payload.getOriginalFilename());
-        return recipientIdList.stream().map(id -> {
-            String title = ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault());
-            String content = ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{payload.getOriginalFilename()}, Locale.getDefault());
-            return NotificationDetails.forFileUploaded(id, title, content, dataPayloadDto);
-        }).toList();
+
+        // 받을 사람 목록 생성(업로드한 유저)
+        List<Long> recipientIdList = getRecipientIdList(payload);
+
+        // 알림 제목, 내용 생성
+        String title = ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault());
+        String content = ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{payload.getOriginalFilename()}, Locale.getDefault());
+
+        StudyFileUploadPayload dataPayload = StudyFileUploadPayload.success(
+                payload.getStudyId(),
+                study.getTitle(),
+                payload.getOriginalFilename()
+        );
+
+        return NotificationDetails.builder()
+                .recipientIds(recipientIdList)
+                .title(title)
+                .content(content)
+                .eventType(type)
+                .dataPayload(dataPayload)
+                .build();
     }
 
     @Override

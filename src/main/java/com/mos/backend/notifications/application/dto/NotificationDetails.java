@@ -1,20 +1,21 @@
 package com.mos.backend.notifications.application.dto;
 
+import com.mos.backend.common.event.EventType;
+import com.mos.backend.notifications.application.dto.payload.DataPayload;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
+@Builder
 public class NotificationDetails {
-    private String recipientId;
+    private List<Long> recipientIds;
+    private EventType eventType;
     private String title;
     private String content;
-    private DataPayloadDto dataPayloadDto;
+    private DataPayload dataPayload;
 
-    public static NotificationDetails forFileUploaded(Long recipientId, String title, String content, DataPayloadDto dataPayloadDto) {
-        NotificationDetails notificationDetails = new NotificationDetails();
-        notificationDetails.recipientId = recipientId.toString();
-        notificationDetails.title = title;
-        notificationDetails.content = content;
-        notificationDetails.dataPayloadDto = dataPayloadDto;
-        return notificationDetails;
-    }
+    @Builder.Default
+    private final boolean loggable = true;
 }

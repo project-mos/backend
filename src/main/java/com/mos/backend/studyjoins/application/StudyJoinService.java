@@ -10,10 +10,12 @@ import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.application.event.StudyJoinCreatedEventPayload;
 import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
+import com.mos.backend.studyjoins.application.event.StudyJoinResultEventPayloadWithNotification;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
@@ -62,7 +64,7 @@ public class StudyJoinService {
         if (studyJoinReqs != null && studyJoinReqs.size() > 0) {
             saveQuestionAnswers(studyJoinReqs, study, newStudyJoin);
         }
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId, newStudyJoin.getId(), study.getTitle())));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_REQUESTED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId, newStudyJoin.getId(), study.getTitle())));
     }
 
     private void saveQuestionAnswers(List<StudyJoinReq> studyJoinReqs, Study study, StudyJoin newStudyJoin) {
@@ -74,7 +76,7 @@ public class StudyJoinService {
 
             eventPublisher.publishEvent(
                     new Event<>(
-                            EventType.STUDY_JOINED,
+                            EventType.STUDY_JOIN_REQUESTED,
                             new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
                     )
             );
@@ -133,6 +135,18 @@ public class StudyJoinService {
         validateSameStudy(studyJoin, study);
 
         handleApprove(studyJoin, study);
+
+        eventPublisher.publishEvent(
+                new Event<>(
+                        EventType.STUDY_JOIN_APPROVED,
+                        new StudyJoinResultEventPayloadWithNotification(
+                                studyJoin.getUser().getId(),
+                                studyId,
+                                studyJoinId,
+                                StudyJoinStatus.APPROVED
+                        )
+                )
+        );
     }
 
     @Transactional
@@ -144,6 +158,18 @@ public class StudyJoinService {
         validateSameStudy(studyJoin, study);
 
         studyJoin.reject();
+
+        eventPublisher.publishEvent(
+                new Event<>(
+                        EventType.STUDY_JOIN_REJECTED,
+                        new StudyJoinResultEventPayloadWithNotification(
+                                studyJoin.getUser().getId(),
+                                studyId,
+                                studyJoinId,
+                                StudyJoinStatus.REJECTED
+                        )
+                )
+        );
     }
 
     @Transactional

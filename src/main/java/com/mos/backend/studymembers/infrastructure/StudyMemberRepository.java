@@ -28,4 +28,6 @@ public interface StudyMemberRepository {
     boolean existsByUserAndStudy(User user, Study study);
 
     List<StudyMember> findAllByStudy(Study study);
+
+    StudyMember findLeaderByStudyId(Long studyId);
 }

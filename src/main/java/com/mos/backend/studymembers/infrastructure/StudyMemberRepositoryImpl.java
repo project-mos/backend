@@ -61,4 +61,9 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     public List<StudyMember> findAllByStudy(Study study) {
         return studyMemberJpaRepository.findAllByStudy(study);
     }
+
+    @Override
+    public StudyMember findLeaderByStudyId(Long studyId) {
+        return studyMemberJpaRepository.findByStudyIdAndLeader(studyId);
+    }
 }

@@ -6,6 +6,8 @@ import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +28,7 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
     boolean existsByUserAndStudy(User user, Study study);
 
     List<StudyMember> findAllByStudy(Study study);
+
+    @Query("SELECT sm from StudyMember sm WHERE sm.study.id = :studyId AND sm.roleType = 'LEADER'")
+    StudyMember findByStudyIdAndLeader(@Param("studyId") Long studyId);
 }

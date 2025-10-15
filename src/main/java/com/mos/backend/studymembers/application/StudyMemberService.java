@@ -140,4 +140,11 @@ public class StudyMemberService {
     public List<StudyMember> findAllByAndStudy(Study study) {
         return studyMemberRepository.findAllByStudy(study);
     }
+
+    /**
+     * 스터디 지원자 발생 시 알림 받을 리더를 조회하기 위한 메서드(내부에서 사용)
+     */
+    public StudyMember findLeaderByStudyId(Long studyId) {
+        return studyMemberRepository.findLeaderByStudyId(studyId);
+    }
 }

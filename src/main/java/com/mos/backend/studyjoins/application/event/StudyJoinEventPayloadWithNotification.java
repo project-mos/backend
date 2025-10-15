@@ -8,7 +8,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class StudyJoinEventPayloadWithNotification implements NotificationPayload {
-    Long joinUserId;
-    HotStudyEventType type;
-    Long studyId;
+    private Long joinUserId;
+    private HotStudyEventType type;
+    private Long studyId;
+    private Long studyJoinId;
+    private String studyName;
 }

@@ -2,7 +2,7 @@ package com.mos.backend.hotstudies.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.hotstudies.application.HotStudyService;
-import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
+import com.mos.backend.studies.application.event.StudyDeletedEventPayloadWithNotification;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.userstudylikes.application.event.StudyLikeEventPayload;
@@ -37,8 +37,8 @@ public class HotStudyConsumer {
     }
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
-    public void handleStudyDeletedEvent(Event<StudyDeletedEventPayload> event) {
-        StudyDeletedEventPayload payload = event.getPayload();
+    public void handleStudyDeletedEvent(Event<StudyDeletedEventPayloadWithNotification> event) {
+        StudyDeletedEventPayloadWithNotification payload = event.getPayload();
         hotStudyService.handleEvent(payload.getType(), payload.getStudyId());
     }
 }

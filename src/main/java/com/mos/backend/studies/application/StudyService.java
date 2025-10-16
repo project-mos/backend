@@ -9,7 +9,7 @@ import com.mos.backend.common.utils.RandomColorGenerator;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
-import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
+import com.mos.backend.studies.application.event.StudyDeletedEventPayloadWithNotification;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.entity.*;
@@ -18,9 +18,9 @@ import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.userstudylikes.application.UserStudyLikeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +44,11 @@ import java.util.Objects;
 public class StudyService {
 
     private final StudyRepository studyRepository;
-    private final StudyMemberService studyMemberService;
     private final HotStudyRepository hotStudyRepository;
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
     private final ApplicationEventPublisher eventPublisher;
-    private final UserStudyLikeService userStudyLikeService;
+    private final StudyMemberService studyMemberService;
 
     /**
      * 스터디 생성
@@ -135,8 +134,13 @@ public class StudyService {
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public void delete(Long userId, Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        List<StudyMember> allMember = studyMemberService.findAllByAndStudy(study);
+        List<Long> recipientIds = allMember.stream().map(sm ->
+                        sm.getUser().getId())
+                .toList();
         studyRepository.delete(studyId);
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayloadWithNotification(HotStudyEventType.DELETE, userId, recipientIds, studyId)));
     }
 
     /**

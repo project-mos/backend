@@ -52,7 +52,7 @@ class NotificationLogServiceTest {
         DataPayload mockPayload = mock(DataPayload.class);
         NotificationDetails details = NotificationDetails.builder()
                 .recipientIds(List.of(1L, 2L)) // 2명의 수신자
-                .eventType(EventType.STUDY_JOINED)
+                .eventType(EventType.STUDY_JOIN_REQUESTED)
                 .title("테스트 제목")
                 .content("테스트 내용")
                 .dataPayload(mockPayload)
@@ -70,7 +70,7 @@ class NotificationLogServiceTest {
 
         assertThat(capturedLogs).hasSize(2);
         assertThat(capturedLogs.get(0).getTitle()).isEqualTo("테스트 제목");
-        assertThat(capturedLogs.get(0).getType()).isEqualTo(EventType.STUDY_JOINED);
+        assertThat(capturedLogs.get(0).getType()).isEqualTo(EventType.STUDY_JOIN_REQUESTED);
         assertThat(capturedLogs.get(0).getPayload()).isEqualTo(mockPayload);
     }
 

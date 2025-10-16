@@ -61,10 +61,10 @@ class StudyFileUploadFailedEventHandlerTest {
         when(mockStudy.getTitle()).thenReturn(studyTitle);
         when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
 
-        String expectedTitle = "파일 업로드 실패";
-        String expectedContent = "failedFile.zip 파일 업로드를 실패했습니다.";
+        String expectedTitle = "파일 업로드 실패!";
+        String expectedContent = studyTitle + "에 failedFile.zip 파일 업로드를 실패했습니다. 다시 시도해주세요.";
         when(messageSource.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault())).thenReturn(expectedTitle);
-        when(messageSource.getMessage(MESSAGE_CONTENT_CODE, new Object[]{fileName}, Locale.getDefault())).thenReturn(expectedContent);
+        when(messageSource.getMessage(MESSAGE_CONTENT_CODE, new String[]{studyTitle, fileName}, Locale.getDefault())).thenReturn(expectedContent);
 
         // when
         NotificationDetails details = studyFileUploadFailedEventHandler.prepareDetails(eventType, eventPayload);

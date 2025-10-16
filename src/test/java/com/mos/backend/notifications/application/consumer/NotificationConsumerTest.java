@@ -51,7 +51,7 @@ class NotificationConsumerTest {
 
         when(dispatcher.findNotificationHandler(eventType)).thenReturn(mockHandler);
 
-        DataPayload dataPayload = StudyFileUploadPayload.success(10L, "스터디", "test.pdf");
+        DataPayload dataPayload = StudyFileUploadPayload.success(10L);
         NotificationDetails details = NotificationDetails.builder()
                 .recipientIds(List.of(1L, 2L, 3L))
                 .eventType(eventType)

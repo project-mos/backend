@@ -6,7 +6,6 @@ import com.mos.backend.users.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +23,7 @@ class NotificationLogTest {
 
         NotificationLog notificationLog = NotificationLog.builder()
                 .recipient(mockUser)
-                .type(EventType.STUDY_JOINED)
+                .type(EventType.STUDY_JOIN_REQUESTED)
                 .title("테스트 제목")
                 .content("테스트 내용")
                 .payload(mockPayload)
@@ -41,7 +40,7 @@ class NotificationLogTest {
         DataPayload mockPayload = mock(DataPayload.class);
         NotificationLog notificationLog = NotificationLog.builder()
                 .recipient(mockUser)
-                .type(EventType.STUDY_JOINED)
+                .type(EventType.STUDY_JOIN_REQUESTED)
                 .title("테스트 제목")
                 .content("테스트 내용")
                 .payload(mockPayload)
@@ -62,7 +61,7 @@ class NotificationLogTest {
         DataPayload mockPayload = mock(DataPayload.class);
         NotificationLog notificationLog = NotificationLog.builder()
                 .recipient(mockUser)
-                .type(EventType.STUDY_JOINED)
+                .type(EventType.STUDY_JOIN_REQUESTED)
                 .title("테스트 제목")
                 .content("테스트 내용")
                 .payload(mockPayload)

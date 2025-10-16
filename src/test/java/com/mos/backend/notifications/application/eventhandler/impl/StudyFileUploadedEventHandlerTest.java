@@ -61,9 +61,9 @@ class StudyFileUploadedEventHandlerTest {
         when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
 
         String expectedTitle = "파일 업로드 완료";
-        String expectedContent = "testFile.pdf 파일이 업로드되었습니다.";
+        String expectedContent = studyTitle + "에 testFile.pdf 파일이 업로드되었습니다.";
         when(ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault())).thenReturn(expectedTitle);
-        when(ms.getMessage(MESSAGE_CONTENT_CODE, new Object[]{fileName}, Locale.getDefault())).thenReturn(expectedContent);
+        when(ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{studyTitle, fileName}, Locale.getDefault())).thenReturn(expectedContent);
 
         // when: 테스트 대상 메서드 호출
         NotificationDetails details = studyFileUploadedEventHandler.prepareDetails(eventType, eventPayload);

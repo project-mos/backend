@@ -40,7 +40,7 @@ class FcmSendingServiceTest {
 
     @BeforeEach
     void setUp() {
-        dataPayload = StudyFileUploadPayload.success(1L, "스터디", "파일.pdf");
+        dataPayload = StudyFileUploadPayload.success(1L);
     }
 
     @Test

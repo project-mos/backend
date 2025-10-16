@@ -375,11 +375,16 @@ public class StudyJoinServiceTest {
             // Given
             Long studyId = 1L;
             Long studyJoinId = 1L;
+            Long userId = 1L;
             Study mockStudy = mock(Study.class);
+            User user = mock(User.class);
+            when(user.getId()).thenReturn(userId);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.getUser()).thenReturn(user);
+
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When

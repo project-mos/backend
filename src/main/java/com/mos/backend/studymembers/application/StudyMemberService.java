@@ -3,11 +3,14 @@ package com.mos.backend.studymembers.application;
 import com.mos.backend.attendances.application.AttendanceService;
 import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studychatrooms.entity.StudyChatRoom;
+import com.mos.backend.studymembers.application.event.StudyMemberCreatedEventPayloadWithNotification;
 import com.mos.backend.studymembers.application.res.StudyMemberRes;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
@@ -17,6 +20,7 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.userstudysettings.application.UserStudySettingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,7 @@ public class StudyMemberService {
     private final StudyMemberRepository studyMemberRepository;
     private final AttendanceRepository attendanceRepository;
     private final EntityFacade entityFacade;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void createStudyLeader(Long studyId, Long userId) {
@@ -67,6 +72,16 @@ public class StudyMemberService {
 
         studyMemberRepository.save(StudyMember.createStudyMember(study, user));
         userStudySettingService.create(studyId, userId);
+
+        eventPublisher.publishEvent(
+                new Event<>(
+                        EventType.STUDY_MEMBER_CREATED,
+                        new StudyMemberCreatedEventPayloadWithNotification(
+                                userId,
+                                studyId
+                        )
+                )
+        );
     }
 
     @Transactional(readOnly = true)

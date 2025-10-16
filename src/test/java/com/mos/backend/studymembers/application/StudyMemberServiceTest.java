@@ -2,6 +2,8 @@ package com.mos.backend.studymembers.application;
 
 import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -15,19 +17,23 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
 import com.mos.backend.userstudysettings.application.UserStudySettingService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mysema.commons.lang.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +55,9 @@ class StudyMemberServiceTest {
     private EntityFacade entityFacade;
     @Mock
     private UserStudySettingService userStudySettingService;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private StudyMemberService studyMemberService;
 
@@ -132,6 +141,12 @@ class StudyMemberServiceTest {
             verify(entityFacade, times(2)).getStudy(studyId);
             verify(entityFacade).getUser(userId);
             verify(studyMemberRepository).save(any(StudyMember.class));
+
+            ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+            verify(eventPublisher, times(1)).publishEvent(eventCaptor.capture());
+
+            Event capturedEvent = eventCaptor.getValue();
+            Assertions.assertThat(capturedEvent.getEventType()).isEqualTo(EventType.STUDY_MEMBER_CREATED);
         }
     }
 

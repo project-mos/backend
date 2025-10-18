@@ -19,4 +19,6 @@ public interface StudyMaterialRepository {
     void delete(StudyMaterial studyMaterial);
 
     List<StudyMaterial> findByStudy(Study study);
+
+    void deleteAllByStudy(Study study);
 }

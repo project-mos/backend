@@ -23,4 +23,6 @@ public interface StudyMaterialJpaRepository extends JpaRepository<StudyMaterial,
     @EntityGraph(attributePaths = {"studyMember", "studyMember.user"})
     @NonNull
     Optional<StudyMaterial> findById(@NonNull Long studyMaterialId);
+
+    void deleteAllByStudy(Study study);
 }

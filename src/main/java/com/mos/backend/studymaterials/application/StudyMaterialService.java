@@ -1,6 +1,5 @@
 package com.mos.backend.studymaterials.application;
 
-import com.mos.backend.common.auth.StudySecurity;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -33,7 +32,6 @@ public class StudyMaterialService {
     private final StudyMemberService studyMemberService;
     private final Uploader uploader;
     private final EntityFacade entityFacade;
-    private final StudySecurity studySecurity;
 
     /**
      * StudyMaterial 생성
@@ -58,6 +56,22 @@ public class StudyMaterialService {
         uploader.uploadFileAsync(userId, uuidFileName, studyId, type, file);
 
         return ReadStudyMaterialResponseDto.from(studyMaterial);
+    }
+
+    /**
+     * 스터디 삭제 시 해당 스터디의 전체 업로드 자료 삭제 처리
+     */
+    @Transactional
+    public void deleteAllByStudyId(Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        List<String> filePathsToDelete = studyMaterialRepository.findByStudy(study)
+                .stream()
+                .map(StudyMaterial::getFilePath)
+                .toList();
+
+        studyMaterialRepository.deleteAllByStudy(study);
+
+        filePathsToDelete.forEach(uploader::deleteFile);
     }
 
     /**

@@ -17,6 +17,7 @@ import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
+import com.mos.backend.studymaterials.application.StudyMaterialService;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
@@ -49,6 +50,7 @@ public class StudyService {
     private final ViewCountService viewCountService;
     private final ApplicationEventPublisher eventPublisher;
     private final StudyMemberService studyMemberService;
+    private final StudyMaterialService studyMaterialService;
 
     /**
      * 스터디 생성
@@ -139,8 +141,9 @@ public class StudyService {
         List<Long> recipientIds = allMember.stream().map(sm ->
                         sm.getUser().getId())
                 .toList();
+        studyMaterialService.deleteAllByStudyId(studyId);
         studyRepository.delete(studyId);
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayloadWithNotification(HotStudyEventType.DELETE, userId, recipientIds, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayloadWithNotification(HotStudyEventType.DELETE, userId, recipientIds, study.getId(), study.getTitle())));
     }
 
     /**

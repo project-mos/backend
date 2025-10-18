@@ -1,7 +1,6 @@
 package com.mos.backend.studies.application.event;
 
 import com.mos.backend.common.event.NotificationPayload;
-import com.mos.backend.common.event.Payload;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,4 +14,5 @@ public class StudyDeletedEventPayloadWithNotification implements NotificationPay
     private Long userId;
     private List<Long> recipientIds;
     private Long studyId;
+    private String studyTitle;
 }

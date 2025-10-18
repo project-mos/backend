@@ -44,4 +44,9 @@ public class StudyMaterialRepositoryImpl implements StudyMaterialRepository{
         return studyMaterialJpaRepository.findByStudy(study);
     }
 
+    @Override
+    public void deleteAllByStudy(Study study) {
+        studyMaterialJpaRepository.deleteAllByStudy(study);
+    }
+
 }

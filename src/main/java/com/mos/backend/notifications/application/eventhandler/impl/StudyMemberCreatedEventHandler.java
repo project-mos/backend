@@ -41,7 +41,7 @@ public class StudyMemberCreatedEventHandler implements NotificationEventHandler<
                 .toList();
 
         String title = ms.getMessage(NEW_MEMBER_CREATED_MESSAGE_TITLE_CODE, null, Locale.getDefault());
-        String content = ms.getMessage(NEW_MEMBER_CREATED_MESSAGE_CONTENT_CODE, new String[]{study.getTitle()}, Locale.getDefault());
+        String content = ms.getMessage(NEW_MEMBER_CREATED_MESSAGE_CONTENT_CODE, new String[]{study.getTitle(), newMember.getNickname()}, Locale.getDefault());
 
         NewStudyMemberPayload dataPayload = new NewStudyMemberPayload(study.getId());
         return NotificationDetails.builder()

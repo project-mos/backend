@@ -32,8 +32,26 @@ public class NotificationConsumer {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @LogOnException
     public <T extends NotificationPayload> void handleNotificationEvent(Event<T> event) {
+        if (event.getEventType() == EventType.FILE_UPLOADED || event.getEventType() == EventType.FILE_UPLOAD_FAILED) {
+            return;
+        }
         log.info("Received notification event after commit: {}", event.getEventType());
+        processNotification(event);
+    }
 
+    @EventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @LogOnException
+    public <T extends NotificationPayload> void handleAsyncNotificationEvent(Event<T> event) {
+        if (event.getEventType() != EventType.FILE_UPLOADED && event.getEventType() != EventType.FILE_UPLOAD_FAILED) {
+            return;
+        }
+        log.info("Received async event: {}", event.getEventType());
+        processNotification(event);
+    }
+
+
+    private <T extends NotificationPayload> void processNotification(Event<T> event) {
         // 해당 이벤트를 처리할 handler 찾기
         NotificationEventHandler<T> handler = dispatcher.findNotificationHandler(event.getEventType());
 

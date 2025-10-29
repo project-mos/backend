@@ -68,7 +68,7 @@ public class NotificationLogService {
      * @param notificationLogId 읽을 알림의 아이디
      */
     @Transactional
-    @PostAuthorize("#returnObject.recipientId == authentication.principal")
+    @PreAuthorize("@notificationSecurity.isRecipientOrAdmin(#notificationLogId)")
     public NotificationResponseDto read(Long notificationLogId) {
         NotificationLog notificationLog = entityFacade.getNotificationLog(notificationLogId);
         notificationLog.read();
